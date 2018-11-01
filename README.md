@@ -230,8 +230,13 @@ check the presence of the dependent files. Setting argument ```install_py``` to 
 with [pip](https://pypi.org/project/pip/). If you prefer using the GPU, 
 you can install the corresponding version of TensorFlow and modify the Python scripts to import it.
 - **params.m** : Contains hyperparameters which may be modified and saved in the W2MHS directory.
-- **NIFTI_codes** : Folder containing scripts from [Tools for NIfTI and ANALYZE image](https://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image).
-- **training** : Folder containing training data and the extracted model (TensorFlow checkpoint).
+- **NIFTI_codes/** : Folder containing scripts from [Tools for NIfTI and ANALYZE image](https://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image).
+- **training/** : Folder containing training data and the extracted model (TensorFlow checkpoint). 
+- **training/options_training.mat**: Internal mat file providing parameters for **WhyD_detect**.
+- **training/checkpoint**, **training/Training_model.index**, **training/Training_model.meta**,
+**training/Training_model.data-00000-of-00001**: Optional mat files defining a DNN trained by **W2MHS_training.py**.
+- **training/features_training.mat**, **training/labels_training.mat**: Optional mat files containing the training data
+needed by **W2MHS_training.py**. Can be downloaded from [NITRC](https://www.nitrc.org/frs/download.php/5548/W2MHS_Source_Code_and_Training_Data.zip).
 
 ## Notes
 This toolbox was developed on Windows and Linux operating systems, and should work on both.

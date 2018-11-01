@@ -1,3 +1,4 @@
+.gitignore
 .idea/
 NIFTI_codes/
 __pycache__/
