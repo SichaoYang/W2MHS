@@ -1,4 +1,4 @@
-% kernels
+.% kernels
 function [ker, width_vec] = getKernels(width)
 
 or = 3; wd = length(width);

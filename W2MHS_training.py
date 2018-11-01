@@ -1,3 +1,4 @@
+import tensorflow as tf
 import numpy as np
 from sklearn.preprocessing import Normalizer
 from sklearn.preprocessing import OneHotEncoder
@@ -6,7 +7,7 @@ from sklearn.metrics import confusion_matrix
 import scipy.io as scio
 from performance_metrics import plot_roc_curve, plot_confusion_matrix
 import os
-import tensorflow as tf
+import sys
 
 '''
 Training module: this module is used to train the nueral network. Along with the implementation of the ROC curve and 
@@ -40,7 +41,10 @@ class batch_kfold_training():
 
         return self.training_features[start:end], self.training_labels[start:end]
 
-
+'''
+Method used to perform batch normalization. Increases the speed of backpropogation training and improves accuracy of 
+model. Method is called only during training.
+'''
 def batch_normalization_process(inputs,is_training, decay = 0.999):
     epsilon = 0.001
     scale = tf.Variable(tf.ones([inputs.get_shape()[-1]]))
@@ -60,7 +64,10 @@ def batch_normalization_process(inputs,is_training, decay = 0.999):
         return tf.nn.batch_normalization(inputs, pop_mean, pop_var, scale, beta, epsilon)
 
 
-def main():
+'''
+performs preprocessing on the data before passing the data through the neural network
+'''
+def main(flag):
     training_path = os.path.join(os.path.dirname(__file__), 'training')
 
     print("Loading features_training.mat...")
@@ -82,8 +89,10 @@ def main():
     BATCH_SIZE = 300
     log_path = os.path.join(training_path, 'log')
 
+    # used for dropout regularization
     keep_prob = tf.placeholder_with_default(1.0, shape=(), name="keep_prob")
 
+    # construction of the DNN framework
     def NeuralNetwork(is_training):
         # placeHolders for features and labels
         X = tf.placeholder(dtype=tf.float32, shape=[None, input_size], name='features')
@@ -180,24 +189,31 @@ def main():
         saver.save(sess, os.path.join(training_path, 'Training_model'))
         sess.close()
 
-        print('validation_accuracy => %.4f' % cv_accuracy)
-       # print(predict_probability)
-        prediction = np.argmax(predict_probability, axis=1)
-        true_labels = np.argmax(Y_test, axis=1)
-        print(prediction[100:150])
-        print(true_labels[100:150])
-        cm = confusion_matrix(true_labels, prediction)
-        true_pred = predict_probability[:, 1]
 
-        print(cm)
-        cm_path = os.path.join(training_path, 'confusion_matrix.png')
-        plot_confusion_matrix(cm, target_names=['WHM', 'NON_WHM'], normalize=False, file_path=cm_path)
-        roc_path = os.path.join(training_path, 'roc_curve.png')
-        plot_roc_curve(true_labels, true_pred, file_path=roc_path)
-        return np.asarray(prediction, dtype=np.float32)
+        print('validation_accuracy => %.4f' % cv_accuracy)
+
+        if flag == 'True':
+       # print(predict_probability)
+            prediction = np.argmax(predict_probability, axis=1)
+            true_labels = np.argmax(Y_test, axis=1)
+            print(prediction[100:150])
+            print(true_labels[100:150])
+            cm = confusion_matrix(true_labels, prediction)
+            true_pred = predict_probability[:, 1]
+
+            print(cm)
+            cm_path = os.path.join(training_path, 'confusion_matrix.png')
+            plot_confusion_matrix(cm, target_names=['WHM', 'NON_WHM'], normalize=False, file_path=cm_path)
+            roc_path = os.path.join(training_path, 'roc_curve.png')
+            plot_roc_curve(true_labels, true_pred, file_path=roc_path)
+
+        #return np.asarray(prediction, dtype=np.float32)
 
 
 if __name__ == '__main__':
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # suppress TensorFlow warnings
-    main()
+    if len(sys.argv) > 1:
+        main(sys.argv[1])
+    else:
+        main('False')
     # np.savetxt(os.path.join(training_path, 'DNN_training_file.csv'), main())

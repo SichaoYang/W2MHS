@@ -1,4 +1,6 @@
-%
+%% script for visualizing the pmap as a heatmap on the original co-registered image
+% this script is triggered if the argument do_visualize is 'yes'
+
 function names = WhyD_visual(names, colorbar, gauss)
     % loads the grayscale probability map
     pmap = load_nii(fullfile(names.directory_path, names.seg_pmap));
@@ -15,7 +17,7 @@ function names = WhyD_visual(names, colorbar, gauss)
     % colors the gray pmap
     output(wmh) = colorbar(pmap(pmap > 0),:);
     % loads the original neuroimage
-    source = load_nii(fullfile(names.directory_path, names.source_bravo));
+    source = load_nii(fullfile(names.directory_path, names.flair_coreg));
     % the colored pmap output combined with the original image
     output_merged = repmat(rescale(source.img), [1 1 1 3]);  
     % adds the pmap onto the original neuroimage

@@ -41,19 +41,7 @@
 
 %%
 function WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path,do_train, do_preproc, do_quantify, GUI, do_visualize)
-%% checking for correctness of all paths
-if ~exist(fullfile(w2mhstoolbox_path, 'NIFTI_codes'), 'dir') || ...
-   ~exist(fullfile(w2mhstoolbox_path,    'training'), 'dir')
-%   ~exist(fullfile(w2mhstoolbox_path,    'rf_codes'), 'dir')
-    error('Toolbox codes and files cannot be found! Check the argument w2mhstoolbox_path \n');
-end
 training_path = fullfile(w2mhstoolbox_path, 'training');
-
-%% Check for compiled MEX files
-%if ~(exist(sprintf('%s/rf_codes/mx_eval_cartree.%s', w2mhstoolbox_path, mexext), 'file'))
-%    fprintf('W2MHS not installed correctly! \n\n\n');
-%    installW2MHS;
-%end
 
 %% checking for correct number of inputs
 if nargin < 6
@@ -82,34 +70,34 @@ if ~exist(fullfile(w2mhstoolbox_path, 'Hyperparameters.mat'), 'file')
 end
 load(fullfile(w2mhstoolbox_path, 'Hyperparameters.mat'), 'clean_th', 'pmap_cut', 'delete_preproc');
 fprintf('USING HYPERPARAMETERS: \n  P-Map Cut: %g \n  Clean Thresh: %g \n  Conserve Memory: %s \n\n', ...
-   pmap_cut, clean_th, delete_preproc);
-    %% starting the expermients
-    fprintf('START \n');
+pmap_cut, clean_th, delete_preproc);
+%% starting the expermients
+fprintf('START \n');
 
-    %% initializing necessary files and directories
-    names_stack = cell(num,1);
-    fprintf('Creating necessary folders and variables for segmentation \n');
-    for n = 1:1:num
-        names.folder_name    = input_name{1,1};
-        names.folder_id      = input_ids{n,1};
-        names.directory_path = sprintf('%s/%s_%s', input_path{1,1}, names.folder_name, names.folder_id);
-        names.source_bravo   = sprintf('BRAVO_%s.nii', names.folder_id);
-        names.source_flair   = sprintf('FLAIR_%s.nii', names.folder_id);
-        names.w2mhstoolbox_path = w2mhstoolbox_path;
-        names_stack{n,1} = names;
-        mkdir(names.directory_path);
-        copyfile(input_images{n,1}, sprintf('%s/BRAVO_%s.nii', names.directory_path, names.folder_id));
-        copyfile(input_images{n,2}, sprintf('%s/FLAIR_%s.nii', names.directory_path, names.folder_id));
-        save(sprintf('%s/names_%s.mat', names.directory_path, names.folder_id), 'names');
-        clear names;
-    end
+%% initializing necessary files and directories
+names_stack = cell(num,1);
+fprintf('Creating necessary folders and variables for segmentation \n');
+for n = 1:1:num
+    names.folder_name    = input_name{1,1};
+    names.folder_id      = input_ids{n,1};
+    names.directory_path = sprintf('%s/%s_%s', input_path{1,1}, names.folder_name, names.folder_id);
+    names.source_bravo   = sprintf('BRAVO_%s.nii', names.folder_id);
+    names.source_flair   = sprintf('FLAIR_%s.nii', names.folder_id);
+    names.w2mhstoolbox_path = w2mhstoolbox_path;
+    names_stack{n,1} = names;
+    mkdir(names.directory_path);
+    copyfile(input_images{n,1}, sprintf('%s/BRAVO_%s.nii', names.directory_path, names.folder_id));
+    copyfile(input_images{n,2}, sprintf('%s/FLAIR_%s.nii', names.directory_path, names.folder_id));
+    save(sprintf('%s/names_%s.mat', names.directory_path, names.folder_id), 'names');
+    clear names;
+end
 
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%                                 ONE MODULE AT A TIME
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                 ONE MODULE AT A TIME
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% preprocessing data
+% if do_preproc is 'no', checks if preprocessing is required
 check_preproc_vals = zeros(num, 1); 
 fprintf('User chose to preprocess the data : %s \n',do_preproc);
 if strcmpi(do_preproc, 'no')
@@ -122,6 +110,7 @@ if strcmpi(do_preproc, 'no')
         fprintf('Have all the necessary files. Skipping preprocessing as per user''s choice \n');
     end
 end
+% if required, preprocess the subjects by calling WhyD_preproc
 if strcmpi(do_preproc, 'yes')
     for n = 1:num
         if check_preproc_vals(n) == 0
@@ -133,9 +122,11 @@ end
 
 %% training the segmentation model
 fprintf('User chose to train the segmentation method : %s \n',do_train);
+% if do_train is 'no', checks if training is required
 if strcmpi(do_train,'yes') || ~check_training(training_path)
     fprintf('Training (Neural Network based classification) \n');
-    system(sprintf('python %s/W2MHS_training.py', w2mhstoolbox_path));
+    % if performance_metrics i.e. ROC or confusion matrix needs to be printed, set False to True.
+    system(sprintf('python %s/W2MHS_training.py False', w2mhstoolbox_path));
     fprintf('Done training \n');
 end
 

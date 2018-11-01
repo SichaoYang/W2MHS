@@ -43,6 +43,8 @@ A Deep Neural Network implemented in [TensorFlow](https://www.tensorflow.org/)
 is used to detect the WMHs.
 - *Quantification Module*: The purpose of this module is to summarize the WMH segmentations. This is
 especially important in down-stream analysis.
+- *Visualization Module*: The purpose of this module is to visualize the hyperintense regions. Probability maps are 
+converted into a heatmap.
 
 We first walk you through installation of the toolbox, followed by the several ways to interface with it.
 Finally there are details on some more advanced features and parameters of W2MHS.
@@ -152,6 +154,8 @@ For example, this mat file for our subject “1” looks something like:
 Of particular importance there are the fields "seg_pmap", "heatmap" and a file "Quant_id.mat" which represent
 the final WMH image (probability map), the heatmap visualization, and the WMH quantification measures.
 
+To view an output image, run ```view_nii(load_nii('path/to/image.nii'))``` in MATLAB command prompt.
+
 ### Batch Script
 W2MHS also comes with a batch script for processing a lot of subjects. The GUI has a similar batch
 feature but this batch script only requires a directory and it will figure out the rest. There is a particular 
@@ -196,24 +200,28 @@ ister and segment WM, GM and CSF tissues. It also constructs ventricle maps and 
 - **WhyD_postproc.m** : Internal postprocessing script that cleans up the segmented outputs.
 - **WhyD_quant.m** : Internal quantification script that calculates the hyperintensity accumulation (deep,
 periventricular, and total).
-- **WhyD_visual**: Internal visualization script that converts the p-map output from **WhyD_postproc.m** into a heatmap, which is then superimposed on
-the original co-registered image, visualizing the probability of hyperintense regions with colors specified by argument ```colorbar```.
-If there is only one subject, the heatmap will be displayed right after generation.
+- **WhyD_visual**: Internal visualization script that converts the p-map output from **WhyD_postproc.m** into a heatmap,
+which is then superimposed on the original co-registered image (or another image you choose, specified by variable ```source```),
+visualizing the probability of hyperintense regions with the color gradient specified by argument ```colorbar```.
+If there is only one subject, the heatmap will be displayed right after generation. 
 - **W2MHS_training.py** : Internal Python+TensorFlow training script. This is an optional script that generates a learned DNN model
 using a given set of features and labels. In the default setting this script is not used
-(a pre-generated model is included in the toolbox).
+(a pre-generated model is included in the toolbox). In order to visualize the model performance set
+```system(sprintf('python %s/W2MHS_training.py False', w2mhstoolbox_path));``` to
+```system(sprintf('python %s/W2MHS_training.py True', w2mhstoolbox_path));``` in **WhyD_setup.m**.
 - **W2MHS_testing.py** : Internal Python+TensorFlow testing script called from **Whyd_detect.m**.
 It loads the hyperparameters of DNN model saved by **W2MHS_training.py** and
 classifies each new instance of the testing set into hyperintense or non-hyperintense voxels.
-- **performance_metrics**: Optional script used to test the validity of the learned model.
+- **performance_metrics.py**: Optional script used to test the validity of the learned model.
 The script can be used to check the performance of the model on new features set.
 See the code for usage and **W2MHS_training.py** for an example.
 - **getKernels.m, getCenter.m, get_gauss_conv.m** : Internal scripts called by **WhyD detect.m**.
 See the paper for details.
 - **check_preproc.m**: Internal script called by **WhyD_setup.m** to see if a subject needs preprocessing 
 when the user choose not to preprocess the subject.
-- **check_training.m** : Internal scripts called by **WhyD_setup.m** to check the training outputs to decide if the model
-needs to be trained when the user choose not to train the model.
+- **check_training.m** : Internal scripts called by **WhyD_setup.m**, which calls the **check_training.py** module.
+- **check_training.py**: Script used to check whether necessary training outputs are present in order to decide 
+if the model needs to be trained when the user chooses not to train the model
 - **BatchSetup.m** : Easy way to run a batch. Open this script and edit the parameters inside.
 - **W2MHS.m** : Opens the GUI interface.
 - **installW2MHS.m** : Add the toolbox to the MATLAB path and

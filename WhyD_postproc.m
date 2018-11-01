@@ -9,7 +9,6 @@ load(fullfile(names.w2mhstoolbox_path, 'Hyperparameters.mat'), 'clean_th', 'pmap
 if ~exist('clean_th','var'), clean_th = 2.5; end
 input = load_nii(fullfile(names.directory_path, names.seg_out));
 out = double(input.img);
-% out_gauss = double(imgaussfilt(input.img, 1));
 sz = size(out);
 ref_input = load_nii(fullfile(names.directory_path, names.WM_mod));
 ref_im = rescale(double(ref_input.img));

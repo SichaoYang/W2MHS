@@ -10,6 +10,12 @@ function installW2MHS(install_py)
     addpath(genpath(spmtoolbox_path));
     fprintf('"%s" and its subdirectories successfully added to MATLAB path.\n' , spmtoolbox_path);
 
+    %% Check Training Path
+    v=ver;
+    if ~exist('training', 'dir')
+        error("The training folder is missing. Please download it from NITRC or SourceForge.")
+    end
+    
     %% Check Image Processing Toolbox
     v=ver;
     if ~any(strcmp({v.Name}, 'Image Processing Toolbox'))

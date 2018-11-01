@@ -9,7 +9,7 @@ def main():
     training_path = os.path.join(os.path.dirname(__file__), 'training')
 
     with open(os.path.join(training_path, 'feature_set.csv'), 'r') as f:
-        feature_set = np.asarray(list(csv.reader(f)), dtype=np.float32)
+        feature_set = np.asarray(list(csv.reader(f))).astype(np.float32)
     transposed_feature_set = np.transpose(feature_set)
 
     new_graph = tf.Graph()

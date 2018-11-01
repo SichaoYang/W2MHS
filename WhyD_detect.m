@@ -43,12 +43,15 @@ for j = 1:folds-1
     end
     D3 = [D,D2]';
     
+    % writes the features to the file for testing purposes
     csvwrite(fullfile(training_path, 'feature_set.csv'), D3);
-    [~,cmdout] = system(sprintf('python %s/W2MHS_testing.py', names.w2mhstoolbox_path));
+     % executes the testing script
+    [status,cmdout] = system(sprintf('python %s/W2MHS_testing.py', names.w2mhstoolbox_path));
+     % converts the binary label output from string to integer 
     oo(sub_ind) = str2num(cmdout); % csvread(fullfile(training_path, 'DNN_testing_file.csv'));
     
     first = last + 1;
-    if mod(j,20) == 0, fprintf('... %d done ... \n',j); end
+    if mod(j,5) == 0, fprintf('... %d done ... \n',j); end
 end
 fprintf('... all folds done ... \n');
 fprintf('Done segmenting subject : %s_%s using %s method \n', names.folder_name, names.folder_id, print.name);
