@@ -245,8 +245,3 @@ post in the help forums on
 [NITRC](https://www.nitrc.org/forum/forum.php?forum_id=3854) or 
 [SourceForge](https://sourceforge.net/p/w2mhs/discussion/general/)
 for further assistance.
-
-
-
-
- 

@@ -1,7 +1,0 @@
-.gitignore
-.idea/
-NIFTI_codes/
-__pycache__/
-training/
-W2MHS_Sample_Images/
-
