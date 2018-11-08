@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/sichao/Downloads/W2MHS-master/training/Training_model"
+all_model_checkpoint_paths: "/home/sichao/Downloads/W2MHS-master/training/Training_model"
