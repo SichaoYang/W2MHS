@@ -1,5 +1,5 @@
 %%  INSTALLATION SCRIPT
-function installW2MHS(install_py)
+function installW2MHS()
     if nargin < 1, install_py=false; end
     clc
     fprintf('______________________________________________________________________\n');
@@ -31,11 +31,9 @@ function installW2MHS(install_py)
     end
 
     %% Install Python Dependencies
-    if install_py
-        fprintf('Check and install required Python packages with pip...\n');
-        if system(sprintf("pip install -r %s/requirements.txt", spmtoolbox_path)) ~= 0
-            error("Pip installation failed. See information above.")
-        end
+    fprintf('Check and install required Python packages with pip...\n');
+    if system(sprintf("pip install -r %s/requirements.txt", spmtoolbox_path)) ~= 0
+        error("Pip installation failed. See information above.")
     end
 
     %% Done
