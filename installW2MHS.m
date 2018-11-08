@@ -1,6 +1,5 @@
 %%  INSTALLATION SCRIPT
-function installW2MHS(install_py)
-    if nargin < 1, install_py=false; end
+function installW2MHS()
     clc
     fprintf('______________________________________________________________________\n');
     fprintf('Wisconsin White Matter Hyperintensity Segmentation and Quantification:\n');
@@ -31,11 +30,9 @@ function installW2MHS(install_py)
     end
 
     %% Install Python Dependencies
-    if install_py
-        fprintf('Check and install required Python packages with pip...\n');
-        if system(sprintf("pip install -r %s/requirements.txt", spmtoolbox_path)) ~= 0
-            error("Pip installation failed. See information above.")
-        end
+    fprintf('Check and install required Python packages with pip...\n');
+    if system(sprintf("pip install -r %s/requirements.txt", spmtoolbox_path)) ~= 0
+        error("Pip installation failed. See information above.")
     end
 
     %% Done
