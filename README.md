@@ -54,7 +54,10 @@ Finally there are details on some more advanced features and parameters of W2MHS
 2. Download and unzip [W2MHS](https://github.com/SichaoYang/W2MHS).
 3. (Optional) Download [W2MHS_Source_Code_and_Training_Data.zip](https://www.nitrc.org/frs/download.php/5548/W2MHS_Source_Code_and_Training_Data.zip)
 and extract *training/features_training.mat* and *training/labels_training.mat* to *W2MHS/training/*.
-4. Install [Python](https://www.python.org/). Check if ```python``` and ```pip``` are in the system path by
+4. Install a version of [Python](https://www.python.org/) that
+[supports TensorFlow](https://www.tensorflow.org/install/pip)i.e. 
+Python 2.7, 3.4, 3.5, 3.6 for Linux/macOS and Python 3.5, 3.6 (64-bit) for Windows to date.
+Check if ```python``` and ```pip``` are in the system path by
 running ```python -V``` and ```pip -V``` in the command prompt.
 These commands should output the version of ```python``` and ```pip``` installed.
 5. (Optional) Modify *requirements.txt* if you prefer using alternative versions of the packages.
@@ -230,9 +233,8 @@ See the code for usage and *W2MHS_training.py* for an example.
 See the paper for details.
 - **check_preproc.m**: Internal script called by *WhyD_setup.m* to see if a subject needs preprocessing 
 when the user choose not to preprocess the subject.
-- **check_training.m** : Internal scripts called by *WhyD_setup.m*, which calls the *check_training.py* module.
-- **check_training.py**: Script used to check whether necessary training outputs are present in order to decide 
-if the model needs to be trained when the user chooses not to train the model
+- **check_training.m** : Internal scripts called by *WhyD_setup.m* to check whether necessary training outputs are
+present in order to decide  if the model needs to be trained when the user chooses not to train the model.
 - **BatchSetup.m** : Easy way to run a batch. Open this script and edit the parameters inside.
 - **W2MHS.m**, **WhyD_GUI.m**: Opens the GUI interface.
 - **installW2MHS.m** : Add the toolbox to the MATLAB path,

@@ -278,7 +278,7 @@ param(clean_th, pmap_cut, delete_preproc);
 
 %% Run WhyD
 
-WhyD_setup(arg0,arg1,arg2,arg3,arg4,arg5,arg7,arg8,arg9,2);
+WhyD_setup(arg0,arg1,arg2,arg3,arg4,arg5,arg7,arg8,arg9,'yes',2);
 
 % --- Executes during object creation, after setting all properties.
 function do_training_CreateFcn(hObject, eventdata, handles)

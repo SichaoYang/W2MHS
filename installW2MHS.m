@@ -12,13 +12,13 @@ function installW2MHS()
     %% Check Training Path
     v=ver;
     if ~exist('training', 'dir')
-        error("The training folder is missing. Please download it from NITRC or SourceForge.")
+        error("The training folder is missing. Please download it from NITRC or SourceForge.");
     end
     
     %% Check Image Processing Toolbox
     v=ver;
     if ~any(strcmp({v.Name}, 'Image Processing Toolbox'))
-        error("Please install Image Processing Toolbox first.")
+        error("Please install Image Processing Toolbox first.");
     end
 
     %% Check Tools for NIfTI and ANALYZE image
@@ -26,13 +26,14 @@ function installW2MHS()
        ~exist('save_nii', 'file') || ...
        ~exist('load_nii', 'file') || ...
        ~exist('view_nii', 'file')        
-        error("Please download Tools for NIfTI and ANALYZE image and place it under the W2MHS toolbox folder.\n")
+        error("Please download Tools for NIfTI and ANALYZE image and place it under the W2MHS toolbox folder.\n");
     end
 
     %% Install Python Dependencies
     fprintf('Check and install required Python packages with pip...\n');
-    if system(sprintf("pip install -r %s/requirements.txt", spmtoolbox_path)) ~= 0
-        error("Pip installation failed. See information above.")
+    if system("python -m pip install --upgrade pip") ~= 0 || ...
+       system(sprintf("python -m pip install -r %s/requirements.txt", spmtoolbox_path)) ~= 0
+        error("Pip installation failed.");
     end
 
     %% Done

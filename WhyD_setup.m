@@ -40,9 +40,9 @@
 % WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path);
 
 %%
-function WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path,do_train, do_preproc, do_quantify, GUI, do_visualize)
+function WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path,do_train, do_preproc, do_quantify, do_visualize, GUI)
 training_path = fullfile(w2mhstoolbox_path, 'training');
-
+disp(GUI);
 %% checking for correct number of inputs
 if nargin < 6
     error('Input error: Not enough input agruments for WhyD_setup! \n');
@@ -77,7 +77,7 @@ fprintf('START \n');
 %% initializing necessary files and directories
 names_stack = cell(num,1);
 fprintf('Creating necessary folders and variables for segmentation \n');
-for n = 1:1:num
+for n = 1:num
     names.folder_name    = input_name{1,1};
     names.folder_id      = input_ids{n,1};
     names.directory_path = sprintf('%s/%s_%s', input_path{1,1}, names.folder_name, names.folder_id);
