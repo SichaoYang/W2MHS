@@ -64,7 +64,7 @@ These commands should output the version of ```python``` and ```pip``` installed
 Modify the import statements in *W2MHS_training.py*, and *W2MHS_testing.py* to match the  version of
 your [TensorFlow](https://www.tensorflow.org/).
 If you want to install the packages in a virtual environment, create and activate it before the next step.
-6. Open Matlab, navigate into the *M2MHS* directory, and run ```installW2MHS```.
+6. Open Matlab **as administrator/root**, navigate into the *M2MHS* directory, and run ```installW2MHS```.
 
 ## Usage
 ### Graphical Interface
