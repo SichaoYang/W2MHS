@@ -162,7 +162,7 @@ def main(flag):
         tf.summary.scalar("Accuracy", Accuracy)
         Merged = tf.summary.merge_all()
 
-        return (X, Y), training_step, Accuracy, Output, tf.train.Saver()
+        return (X, Y), training_step, Accuracy, Output, tf.train.Saver(save_relative_paths=True)
 
     (X, Y), training_step, Accuracy, y_pred, saver = NeuralNetwork(is_training=True)
     clf = batch_kfold_training(X_train, Y_train)
@@ -216,4 +216,3 @@ if __name__ == '__main__':
         main(sys.argv[1])
     else:
         main('False')
-    # np.savetxt(os.path.join(training_path, 'DNN_training_file.csv'), main())
