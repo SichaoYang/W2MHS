@@ -21,9 +21,8 @@ def main():
         # restores the trained parameters and variables for testing on the new feature set
         X = graph.get_tensor_by_name("features:0")
         Accuracy = graph.get_tensor_by_name("Output_Layer:0")
-        keep_prob = graph.get_tensor_by_name("keep_prob:0")
         predict = tf.argmax(Accuracy, 1)
-        output = sess.run(predict, feed_dict={X: transposed_feature_set, keep_prob: 1.0})
+        output = sess.run(predict, feed_dict={X: transposed_feature_set})
         return output
 
 
@@ -33,4 +32,3 @@ if __name__ == '__main__':
     for i in output[:-1]:
         print(i, end=" ")
     print(output[-1])
-    # np.savetxt(os.path.join(training_path, 'DNN_testing_file.csv'), main())
