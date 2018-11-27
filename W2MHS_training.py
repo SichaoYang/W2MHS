@@ -216,4 +216,3 @@ if __name__ == '__main__':
         main(sys.argv[1])
     else:
         main('False')
-    # np.savetxt(os.path.join(training_path, 'DNN_training_file.csv'), main())
