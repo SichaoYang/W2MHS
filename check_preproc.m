@@ -12,15 +12,15 @@ for n = 1:num
     % checking each of the necerrasy files
     
     names = names_stack{n,1}; var = 0;
-    var = var + exist(sprintf('%s/BRAVO_%s.nii',names.directory_path,names.folder_id),'file');
-    var = var + exist(sprintf('%s/FLAIR_%s.nii',names.directory_path,names.folder_id),'file');
-    var = var + exist(sprintf('%s/c1rFLAIR_%s.nii',names.directory_path,names.folder_id),'file');
-    var = var + exist(sprintf('%s/c2rFLAIR_%s.nii',names.directory_path,names.folder_id),'file');
-    var = var + exist(sprintf('%s/c3rFLAIR_%s.nii',names.directory_path,names.folder_id),'file');
-    var = var + exist(sprintf('%s/vent_cut.nii',names.directory_path),'file');
-    var = var + exist(sprintf('%s/rFLAIR_%s.nii',names.directory_path,names.folder_id),'file');
-    var = var + exist(sprintf('%s/mrFLAIR_%s.nii',names.directory_path,names.folder_id),'file');
-    var = var + exist(sprintf('%s/Vent_strip_%s.nii',names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/BRAVO_%s.nii',      names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/FLAIR_%s.nii',      names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/c1rFLAIR_%s.nii',   names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/c2rFLAIR_%s.nii',   names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/c3rFLAIR_%s.nii',   names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/vent_cut_%s.nii',   names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/rFLAIR_%s.nii',     names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/mrFLAIR_%s.nii',    names.directory_path,names.folder_id),'file');
+    var = var + exist(sprintf('%s/Vent_strip_%s.nii', names.directory_path,names.folder_id),'file');
     var = var + exist(sprintf('%s/GMCSF_strip_%s.nii',names.directory_path,names.folder_id),'file');
     var = var + exist(sprintf('%s/WM_modstrip_%s.nii',names.directory_path,names.folder_id),'file');
     
@@ -35,14 +35,14 @@ for n = 1:num
     if chk_n == 1
         % correcting names file as per the findings
         %% Correct c0
-        names.pve_flair_c1 = sprintf('c1rFLAIR_%s.nii', names.folder_id);  
-        names.pve_flair_c2 = sprintf('c2rFLAIR_%s.nii',names.folder_id);
-        names.pve_flair_c3 = sprintf('c3rFLAIR_%s.nii',names.folder_id);
-        names.flair_coreg = sprintf('rFLAIR_%s.nii',names.folder_id);
-        names.flair_biascorr = sprintf('mrFLAIR_%s.nii',names.folder_id);
-        names.Vent = sprintf('Vent_strip_%s.nii',names.folder_id);
-        names.GMCSF = sprintf('GMCSF_strip_%s.nii',names.folder_id);
-        names.WM_mod = sprintf('WM_modstrip_%s.nii',names.folder_id);
+        names.pve_flair_c1   = sprintf('c1rFLAIR_%s.nii',   names.folder_id);  
+        names.pve_flair_c2   = sprintf('c2rFLAIR_%s.nii',   names.folder_id);
+        names.pve_flair_c3   = sprintf('c3rFLAIR_%s.nii',   names.folder_id);
+        names.flair_coreg    = sprintf('rFLAIR_%s.nii',     names.folder_id);
+        names.flair_biascorr = sprintf('mrFLAIR_%s.nii',    names.folder_id);
+        names.Vent           = sprintf('Vent_strip_%s.nii', names.folder_id);
+        names.GMCSF          = sprintf('GMCSF_strip_%s.nii',names.folder_id);
+        names.WM_mod         = sprintf('WM_modstrip_%s.nii',names.folder_id);
         
         %names.pve_flair_c0 = sprintf('c0rFLAIR_%s.nii',names.folder_id);
         %names.WM = sprintf('WM_strip_%s.nii',names.folder_id);

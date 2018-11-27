@@ -162,7 +162,7 @@ def main(flag):
         tf.summary.scalar("Accuracy", Accuracy)
         Merged = tf.summary.merge_all()
 
-        return (X, Y), training_step, Accuracy, Output, tf.train.Saver()
+        return (X, Y), training_step, Accuracy, Output, tf.train.Saver(save_relative_paths=True)
 
     (X, Y), training_step, Accuracy, y_pred, saver = NeuralNetwork(is_training=True)
     clf = batch_kfold_training(X_train, Y_train)

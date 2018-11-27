@@ -96,23 +96,15 @@ addpath(spmtoolbox_path); batch = dir(batch_path);
 s = size(batch); images = {};ids = {}; name = {'0'};
 
 for i = 3 : s(1)
-    
-    fNam = lower(batch(i).name);  br = regexp(fNam, 'bravo'); 
-    fl = regexp(fNam, 'flair');  s = size(batch); l = size(fNam); 
-    found = 0; ind = 0;
-    
-    for j = 1:l(2)
-        char = fNam(j);
-        if (char == '0' || char == '1' || char == '2' || char == '3' || ...
-                char == '4' || char == '5' || char == '6' || char == '7' || ...
-                char == '8' || char == '9') && ind == 0
-            ind = j; found = 1;
-            break;
-        end
+    fNam = lower(batch(i).name);
+    br = regexp(fNam, 'bravo');
+    ind = regexp(fNam, '[0-9].*');
+    if ind, found = 1;
+    else,   found = 0; ind = 0;
     end
-    id = strrep(strrep(strrep(strrep(strrep(lower(fNam(ind:end)),'bravo','')   ...
-        ,'flair',''),'__','_'),'.nii',''),' ','');
     
+    id = strrep(strrep(strrep(strrep(strrep(fNam(max(ind,1):end),...
+        'bravo',''),'flair',''),'__','_'),'.nii',''),' ','');
     if name{1,1} == '0'
         name = {strrep(strrep(fNam(1:ind-1),'_',''),' ','')};
     end
@@ -122,7 +114,7 @@ for i = 3 : s(1)
             search = strrep(fNam,'bravo', 'flair');
             if(strcmp(batch(j).name,search))
                 found = j;
-                [row, col] = size(images);
+                [row, ~] = size(images);
                 image1 = strcat(output_path,batch(i).name);
                 image2 = strcat(output_path,batch(j).name);
                 images{row+1,1} = image1{1,1};
@@ -133,12 +125,11 @@ for i = 3 : s(1)
     end
 
     if found == 0 && numel(br) == 1
-        display( sprintf('Could not find a match for: %s', batch(i).name));
-    else
+        fprintf('Could not find a match for: %s\n', batch(i).name);
     end
 end
 
-clear batch br char col fNam fl found i id ind j l row s search
+clear batch s i j fNam br ind found id search row
 
 s = size(images);
 
