@@ -13,47 +13,38 @@ sub_dim = size(sub_image);
 %% segmenting new subject
 % initializing the segmentation process
 fg_thresh = 0.6 * max(sub_image(:));
-fg = find(sub_image > fg_thresh); 
-N_tot = length(fg); lnloop = 500; folds = ceil(N_tot/lnloop); eps = 1e-3;
+fg = find(sub_image > fg_thresh);
+
 names.method = 'DNN Classification';
 print = struct('name', 'DNN Classification', 'short', 'DNN');
 fprintf('Segmenting subject: %s_%s using %s.\n',names.folder_name, names.folder_id, print.name);
-fprintf('Total folds in processing: %d \n',folds);
-oo = zeros(N_tot,1); first = 1;
-% computing kernels for each fold followed by segmenting
-for j = 1:folds-1
-    last = min(first + lnloop - 1, N_tot);
-    sub_ind = first:last;
-    [Xr,Yr,Zr] = ind2sub(sub_dim, fg(sub_ind));
-    D  = zeros(length(sub_ind), K^3);
-    D2 = zeros(length(sub_ind), K^3 * length(ker));
-    R  = [-(K-1)/2:(K-1)/2];
-    for n = 1:length(sub_ind)
-        local = sub_image(Xr(n) + R,Yr(n) + R,Zr(n) + R);
-        D(n,:) = local(:);
-        for k = 1:length(ker)
-            r = (k-1)*K^3+1:k*K^3;
-            conv = convn(local, ker{k,1}, 'same');
-            D2(n,r) = conv(:) / width_vec(k)^3;
-            if k == length(ker),      D2(n,r) = D2(n,r) / 3;
-            elseif 3 <= k && k <= 8,  D2(n,r) = D2(n,r) + D(n,:);
-            elseif 9 <= k && k <= 14, D2(n,r) = D2(n,r) - D(n,:);
-            end
+
+[Xr,Yr,Zr] = ind2sub(sub_dim, fg);
+D  = zeros(length(fg), K^3);
+D2 = zeros(length(fg), K^3 * length(ker));
+R  = -(K-1)/2:(K-1)/2;
+for n = 1:length(fg)
+    local = sub_image(Xr(n) + R,Yr(n) + R,Zr(n) + R);
+    D(n,:) = local(:);
+    for k = 1:length(ker)
+        r = (k-1)*K^3+1:k*K^3;
+        conv = convn(local, ker{k,1}, 'same');
+        D2(n,r) = conv(:) / width_vec(k)^3;
+        if k == length(ker),      D2(n,r) = D2(n,r) / 3;
+        elseif 3 <= k && k <= 8,  D2(n,r) = D2(n,r) + D(n,:);
+        elseif 9 <= k && k <= 14, D2(n,r) = D2(n,r) - D(n,:);
         end
     end
-    D3 = [D,D2]';
-    
-    % writes the features to the file for testing purposes
-    csvwrite(fullfile(training_path, 'feature_set.csv'), D3);
-     % executes the testing script
-    [status,cmdout] = system(sprintf('python %s/W2MHS_testing.py', names.w2mhstoolbox_path));
-     % converts the binary label output from string to integer 
-    oo(sub_ind) = str2num(cmdout); % csvread(fullfile(training_path, 'DNN_testing_file.csv'));
-    
-    first = last + 1;
-    if mod(j,5) == 0, fprintf('... %d done ... \n',j); end
 end
-fprintf('... all folds done ... \n');
+
+% writes the features to the file for testing purposes
+csvwrite(fullfile(training_path, 'feature_set.csv'), [D,D2]);
+% executes the testing script
+system(sprintf('docker run -ti --rm -v %s:/training sichao/w2mhs:v2018.2 python W2MHS_testing.py', training_path));
+% converts the binary label output from string to integer 
+oo = csvread(fullfile(training_path, 'DNN_testing_file.csv'));
+delete(fullfile(training_path, 'DNN_testing_file.csv'));
+
 fprintf('Done segmenting subject : %s_%s using %s method \n', names.folder_name, names.folder_id, print.name);
 out = zeros(sub_dim); out(ind2sub(sub_dim, fg)) = oo;
 % saving the segmentated output and updating names file

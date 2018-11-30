@@ -22,7 +22,6 @@
 
 % EXAMPLE 1:
 % w2mhstoolbox_path = '\home\Documents\W2MHS\';
-% spmtoolbox_path = '\home\spm12b';
 % output_name = {'mystudy'}; output_ids = {'a1'};
 % output_path = {'\home\Documents\W2MHSoutputs\'};
 % input_images = {'\home\Documents\images\T1.nii','\home\Documents\images\T2.nii'};
@@ -40,18 +39,18 @@
 % WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path);
 
 %%
-function WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path,do_train, do_preproc, do_quantify, do_visualize, GUI)
+function WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, do_train, do_preproc, do_quantify, do_visualize, GUI)
 training_path = fullfile(w2mhstoolbox_path, 'training');
 disp(GUI);
 %% checking for correct number of inputs
 if nargin < 6
     error('Input error: Not enough input agruments for WhyD_setup! \n');
 end
-if ~exist('do_train','var'),        do_train = 'no';      end
-if ~exist('do_preproc','var'),      do_preproc = 'yes';   end
-if ~exist('do_quantify','var'),     do_quantify = 'yes';  end
-if ~exist('do_visualize','var'),    do_visualize = 'yes'; end
-if ~exist('GUI','var') || GUI ~= 2, param();              end
+if ~exist('do_train','var'),     do_train     = 'no';  end
+if ~exist('do_preproc','var'),   do_preproc   = 'yes'; end
+if ~exist('do_quantify','var'),  do_quantify  = 'yes'; end
+if ~exist('do_visualize','var'), do_visualize = 'yes'; end
+if ~exist('GUI','var') || GUI ~= 2, param(w2mhstoolbox_path); end
 
 %% rearranging inputs
 input_name = output_name; input_path = output_path; input_ids = output_ids;
@@ -66,7 +65,7 @@ if size(input_images,1)~=size(input_ids,1)
 end
 num = size(input_images,1);
 if ~exist(fullfile(w2mhstoolbox_path, 'Hyperparameters.mat'), 'file')
-    param;
+    param(w2mhstoolbox_path);
 end
 load(fullfile(w2mhstoolbox_path, 'Hyperparameters.mat'), 'clean_th', 'pmap_cut', 'delete_preproc');
 fprintf('USING HYPERPARAMETERS: \n  P-Map Cut: %g \n  Clean Thresh: %g \n  Conserve Memory: %s \n\n', ...
@@ -99,7 +98,7 @@ end
 %% preprocessing data
 % if do_preproc is 'no', checks if preprocessing is required
 check_preproc_vals = zeros(num, 1); 
-fprintf('User chose to preprocess the data : %s \n',do_preproc);
+fprintf('User chose to preprocess the data: %s \n',do_preproc);
 if strcmpi(do_preproc, 'no')
     [check_preproc_vals, names_stack] = check_preproc(names_stack);
     if sum(check_preproc_vals) ~= num
@@ -114,19 +113,19 @@ end
 if strcmpi(do_preproc, 'yes')
     for n = 1:num
         if check_preproc_vals(n) == 0
-            names_stack{n,1} = WhyD_preproc(names_stack{n,1}, spmtoolbox_path);
+            names_stack{n,1} = WhyD_preproc(names_stack{n,1});
         end
     end
     fprintf('Done preprocessing \n');
 end
 
 %% training the segmentation model
-fprintf('User chose to train the segmentation method : %s \n',do_train);
+fprintf('User chose to train the segmentation method: %s \n',do_train);
 % if do_train is 'no', checks if training is required
 if strcmpi(do_train,'yes') || ~check_training(training_path)
     fprintf('Training (Neural Network based classification) \n');
     % if performance_metrics i.e. ROC or confusion matrix needs to be printed, set False to True.
-    system(sprintf('python %s/W2MHS_training.py False', w2mhstoolbox_path));
+    system(sprintf('docker run -ti --rm -v %s:/training sichao/w2mhs:v2018.2 python W2MHS_training.py False', training_path));
     fprintf('Done training \n');
 end
 
@@ -139,7 +138,7 @@ end
 fprintf('Done segmenting (and postprocessing) \n');
 
 %% quantifying the detections
-fprintf('User chose to quantify the hyperintensity accumulation : %s \n',do_quantify);
+fprintf('User chose to quantify the hyperintensity accumulation: %s \n',do_quantify);
 if strcmpi(do_quantify, 'yes')
     fprintf('Quantifying hyperintensity accumulation \n');
     for n = 1:num
@@ -149,15 +148,14 @@ if strcmpi(do_quantify, 'yes')
 end
 
 %% visualizing the output
-colorbar = jet(256);
+fprintf('User chose to visualize the hyperintensity: %s \n',do_visualize);
 if strcmpi(do_visualize, 'yes')
+    colorbar = jet(256);
     fprintf('Creating heatmaps \n');
     for n = 1:num
-        names_stack{n,1} = WhyD_visual(names_stack{n,1}, colorbar, 0);
-    end
-    if num == 1
-        names = names_stack{1,1};
+        names = WhyD_visual(names_stack{n,1}, colorbar, 0);
         view_nii(load_nii(fullfile(names.directory_path, names.heatmap)));
+        names_stack{n,1} = names;
     end
     fprintf('Done visualization \n');
 end

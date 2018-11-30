@@ -7,14 +7,16 @@
 function names = WhyD_quant(names)
 
 %% initializing and loading necessary files for quantification
-load(strrep(sprintf('%s/Hyperparameters.mat',names.w2mhstoolbox_path),'//','/'));
+load(fullfile(names.w2mhstoolbox_path, 'Hyperparameters.mat'), 'pmap_cut', 'delete_preproc');
 if ~exist('pmap_cut','var');  pmap_cut = .5; end
-vent_input = load_nii(sprintf('%s/%s',names.directory_path,names.Vent));
-wm_input = load_nii(sprintf('%s/%s',names.directory_path,names.WM_mod));
-pmap_input = load_nii(sprintf('%s/%s',names.directory_path,names.seg_pmap));
-vent = double(vent_input.img); wm = double(wm_input.img); 
-pmap = double(pmap_input.img); pmap(pmap<pmap_cut) = 0; sz = size(vent);
-% 
+vent_input = load_nii(fullfile(names.directory_path,names.Vent));
+  wm_input = load_nii(fullfile(names.directory_path,names.WM_mod));
+pmap_input = load_nii(fullfile(names.directory_path,names.seg_pmap));
+vent = double(vent_input.img);
+  wm = double(wm_input.img); 
+pmap = double(pmap_input.img);
+pmap(pmap<pmap_cut) = 0;
+
 V_res = 0.5; % resolution of each voxel (in mm)
 dist_D_P = 8; % periventricular region width (in mm)
 [x,y,z] = ndgrid(-dist_D_P:dist_D_P); 
@@ -43,12 +45,13 @@ fclose(fid);
 
 % Delete preprocessing files if hyperparemeter is set
 
-if strcmpi(delete_preproc, 'yes');  delete(sprintf('%s/%s',names.directory_path,names.WM_mod));
-    delete(sprintf('%s/%s',names.directory_path,names.Vent));
-    delete(sprintf('%s/%s',names.directory_path,names.source_bravo));
-    delete(sprintf('%s/%s',names.directory_path,names.source_flair));
-    delete(sprintf('%s/%s',names.directory_path,names.pve_flair_c2));
-    delete(sprintf('%s/%s',names.directory_path,names.pve_flair_c3));
+if strcmpi(delete_preproc, 'yes')
+    delete(fullfile(names.directory_path,names.WM_mod));
+    delete(fullfile(names.directory_path,names.Vent));
+    delete(fullfile(names.directory_path,names.source_bravo));
+    delete(fullfile(names.directory_path,names.source_flair));
+    delete(fullfile(names.directory_path,names.pve_flair_c2));
+    delete(fullfile(names.directory_path,names.pve_flair_c3));
  end
 
 %% end

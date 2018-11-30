@@ -1,4 +1,4 @@
-function param(p, c, d)
+function param(w2mhstoolbox_path, p, c, d)
 
 %%      Hyperparameter Default Setup Script         %%
 % The parameters in this script are additional options
@@ -35,48 +35,18 @@ clean_th = 2.5;
 
 delete_preproc = 'No';
 
-
-
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %%
 %                  DO NOT MODIFY BELOW THIS POINT                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if(nargin ~= 3)
+if nargin > 1 && ~isnan(c), clean_th = c; end
+if nargin > 2 && ~isnan(p), pmap_cut = p; end
+if nargin > 3, delete_preproc = d; end
     
-    if(clean_th < 0)
-        clean_th = 0;
-    end
-    if( pmap_cut  < 0)
-        pmap_cut = 0;
-    elseif(pmap_cut > 1)
-        pmap_cut = 1;
-    end
-    if(strcmp(delete_preproc,'Yes'))
-        
-    else
-        delete_preproc = 'No';
-    end
-   
-
+clean_th = max(clean_th, 0);
+pmap_cut = max(min(pmap_cut, 1), 0);
+if strcmpi(delete_preproc,'yes')
+    delete_preproc = 'Yes';
 else
-    clean_th = c;
-    if(clean_th < 0)
-        clean_th = 0;
-    end
-   pmap_cut = p;
-    if(pmap_cut < 0)
-        pmap_cut = 0;
-    elseif(pmap_cut > 1)
-        pmap_cut = 1;
-    end
-    
-    delete_preproc = d;
-    if(strcmpi(d,'yes'))
-        delete_preproc = 'Yes';
-    else
-       delete_preproc = 'No';
-    end
+    delete_preproc = 'No';
 end
-path = mfilename('fullpath');  path = strcat(path, '.m');
-path = strrep(path, 'param.m', '');
-file = strcat(path ,'Hyperparameters.mat');
-save(file, 'delete_preproc', 'clean_th', 'pmap_cut');
+save(fullfile(w2mhstoolbox_path, 'Hyperparameters.mat'), 'clean_th', 'pmap_cut', 'delete_preproc');

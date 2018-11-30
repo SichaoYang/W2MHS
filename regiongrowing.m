@@ -1,7 +1,32 @@
 function J=regiongrowing(I,x,y,reg_maxdist)
+% This function performs "region growing" in an image from a specified
+% seedpoint (x,y)
+%
+% J = regiongrowing(I,x,y,t) 
+% 
+% I : input image 
+% J : logical output image of region
+% x,y : the position of the seedpoint (if not given uses function getpts)
+% t : maximum intensity distance (defaults to 0.2)
+%
+% The region is iteratively grown by comparing all unallocated neighbouring pixels to the region. 
+% The difference between a pixel's intensity value and the region's mean, 
+% is used as a measure of similarity. The pixel with the smallest difference 
+% measured this way is allocated to the respective region. 
+% This process stops when the intensity difference between region mean and
+% new pixel become larger than a certain treshold (t)
+%
+% Example:
+%
+% I = im2double(imread('medtest.png'));
+% x=198; y=359;
+% J = regiongrowing(I,x,y,0.2); 
+% figure, imshow(I+J);
+%
+% Author: D. Kroon, University of Twente
 
-if(exist('reg_maxdist','var')==0), reg_maxdist=0.2; end
-if(exist('y','var')==0), figure, imshow(I,[]); [y,x]=getpts; y=round(y(1)); x=round(x(1)); end
+if ~exist('reg_maxdist','var'), reg_maxdist=0.2; end
+if ~exist('y','var'), figure, imshow(I,[]); [y,x]=getpts; y=round(y(1)); x=round(x(1)); end
 
 J = zeros(size(I)); % Output 
 Isizes = size(I); % Dimensions of input image
@@ -21,9 +46,8 @@ neigb=[-1 0; 1 0; 0 -1;0 1];
 % Start regiogrowing until distance between regio and posible new pixels become
 % higher than a certain treshold
 while(pixdist<reg_maxdist&&reg_size<numel(I))
-
     % Add new neighbors pixels
-    for j=1:4,
+    for j=1:4
         % Calculate the neighbour coordinate
         xn = x +neigb(j,1); yn = y +neigb(j,2);
         
@@ -54,10 +78,5 @@ while(pixdist<reg_maxdist&&reg_size<numel(I))
     % Remove the pixel from the neighbour (check) list
     neg_list(index,:)=neg_list(neg_pos,:); neg_pos=neg_pos-1;
 end
-
 % Return the segmented area as logical matrix
 J=J>1;
-
-
-
-

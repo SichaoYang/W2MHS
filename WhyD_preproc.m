@@ -2,11 +2,14 @@
 %% script for preprocessing the raw T1 and T2 input files
 
 %%
-function names = WhyD_preproc(names, spmtoolbox_path)
+function names = WhyD_preproc(names)
 
 fprintf('\nDoing preprocessing on subject : %s_%s \n',names.folder_name,names.folder_id);
-addpath(spmtoolbox_path);
-spm('defaults','FMRI');
+if ~isdeployed, spm('defaults','FMRI'); end
+
+if ~exist(fullfile(names.w2mhstoolbox_path, 'TPM.nii'), 'file')
+    error('Could not find TPM.nii! \n\n Make sure the toolbox path is correct!');
+end
 
 %% generating batch file for coregistration
 fid = fopen(sprintf('%s/coreg%s_job.m',names.directory_path,names.folder_id),'w+');
@@ -20,19 +23,27 @@ fprintf(fid,'matlabbatch{1}.spm.spatial.coreg.estwrite.eoptions.fwhm = [7 7];\n'
 fprintf(fid,'matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.interp = 4;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.wrap = [0 0 0];\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.mask = 0;\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.prefix = ''r'';\n'); fclose(fid);
+fprintf(fid,'matlabbatch{1}.spm.spatial.coreg.estwrite.roptions.prefix = ''r'';\n');
+fclose(fid);
 
 %% coregistering flair image to bravo
 fprintf('Coregistration of T2-FLAIR to T1\n');
-%
-try
-jobpath = {sprintf('%s/coreg%s_job.m',names.directory_path,names.folder_id)};
-jobs = repmat(jobpath, 1, 1); spm_jobman('run',jobs); clear jobpath jobs;
+
+job = sprintf('%s/coreg%s_job.m',names.directory_path,names.folder_id);
+if isdeployed
+    if system(sprintf('%s batch %s', fullfile(names.w2mhstoolbox_path, 'spm', 'spm12'), job)) ~= 0
+        error('Could not intialize SPM12 preprocessing! \n\n  Make sure the toolbox path is correct!');
+    end
+else
+    try
+        spm_jobman('run', {job});
+    catch
+        error('Could not intialize SPM12 preprocessing! \n\n  Make sure you have SPM12 installed and the path is correct...');
+    end
+end
+clear job;
 names.flair_coreg = sprintf('rFLAIR_%s.nii',names.folder_id);
 
-catch
-    error('Could not intialize SPM12b preprocessing! \n\n  Make sure you have SPM12b installed and the path is correct...')
-end
 
 %% generating batch file for tissue labels segmentation on bravo
 fid = fopen(sprintf('%s/tissues%s_job.m',names.directory_path,names.folder_id),'w+');
@@ -40,31 +51,31 @@ fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(1).vols = {''%s/%s,1''};
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(1).biasreg = 0;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(1).biasfwhm = 120;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(1).write = [0 1];\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(2).vols = {''%s/%s,1''};\n', names.directory_path,names.source_bravo);
+fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(2).vols = {''%s/%s,1''};\n',names.directory_path,names.source_bravo);
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(2).biasreg = 0;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(2).biasfwhm = 120;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.channel(2).write = [0 0];\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(1).tpm = {''%s/tpm/TPM.nii,1''};\n',spmtoolbox_path);
+fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(1).tpm = {''%s/TPM.nii,1''};\n', names.w2mhstoolbox_path);
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(1).ngaus = 5;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(1).native = [1 0];\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(1).warped = [0 0];\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(2).tpm = {''%s/tpm/TPM.nii,2''};\n',spmtoolbox_path);
+fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(2).tpm = {''%s/TPM.nii,2''};\n', names.w2mhstoolbox_path);
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(2).ngaus = 5;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(2).native = [1 0];\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(2).warped = [0 0];\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(3).tpm = {''%s/tpm/TPM.nii,3''};\n',spmtoolbox_path);
+fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(3).tpm = {''%s/TPM.nii,3''};\n', names.w2mhstoolbox_path);
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(3).ngaus = 5;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(3).native = [1 0];\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(3).warped = [0 0];\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(4).tpm = {''%s/tpm/TPM.nii,4''};\n',spmtoolbox_path);
+fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(4).tpm = {''%s/TPM.nii,4''};\n', names.w2mhstoolbox_path);
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(4).ngaus = 3;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(4).native = [0 0];\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(4).warped = [0 0];\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(5).tpm = {''%s/tpm/TPM.nii,5''};\n',spmtoolbox_path);
+fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(5).tpm = {''%s/TPM.nii,5''};\n', names.w2mhstoolbox_path);
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(5).ngaus = 4;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(5).native = [0 0];\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(5).warped = [0 0];\n');
-fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(6).tpm = {''%s/tpm/TPM.nii,6''};\n',spmtoolbox_path);
+fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(6).tpm = {''%s/TPM.nii,6''};\n', names.w2mhstoolbox_path);
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(6).ngaus = 2;\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(6).native = [0 0];\n');
 fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.tissue(6).warped = [0 0];\n');
@@ -78,15 +89,22 @@ fprintf(fid,'matlabbatch{1}.spm.spatial.preproc.warp.write = [0 0];\n');fclose(f
 %% tissue labels segmenting on bravo image
 fprintf('GM, WM, CSF Tissues extraction from T1\n');
 %
-jobpath = {sprintf('%s/tissues%s_job.m',names.directory_path,names.folder_id)};
-jobs = repmat(jobpath, 1, 1); spm_jobman('run',jobs); clear jobpath jobs;
+job = sprintf('%s/tissues%s_job.m',names.directory_path,names.folder_id);
+if isdeployed
+    if system(sprintf('%s batch %s', fullfile(names.w2mhstoolbox_path, 'spm', 'spm12'), job)) ~= 0
+        error('Could not intialize SPM12 preprocessing! \n\n  Make sure the toolbox path is correct!');
+    end
+else
+    spm_jobman('run', {job});
+end
+clear job;
 
-load(strrep(sprintf('%s/Hyperparameters.mat',names.w2mhstoolbox_path),'//','/'));
+load(fullfile(names.w2mhstoolbox_path, 'Hyperparameters.mat'), 'delete_preproc');
 
 if(strcmpi(delete_preproc, 'yes'))
     delete(sprintf('%s/c1rFLAIR_%s.nii',names.directory_path,names.folder_id));
     delete(sprintf('%s/coreg%s_job.m',names.directory_path,names.folder_id));
-    delete(sprintf('%s/tissues%s_job.m',names.directory_path,names.folder_id));
+    numeldelete(sprintf('%s/tissues%s_job.m',names.directory_path,names.folder_id));
 else
 names.pve_flair_c1 = sprintf('c1rFLAIR_%s.nii',names.folder_id);
 end
@@ -100,7 +118,7 @@ fprintf('Constructing the WM, GM and CSF templates\n');
 %
 wm_mask = load_nii(sprintf('%s/c2rFLAIR_%s.nii',names.directory_path,names.folder_id));
 %gm_mask = load_nii(sprintf('%s/c1rFLAIR_%s.nii',names.directory_path,names.folder_id));
-csf_mask = load_nii(sprintf('%s/c3rFLAIR_%s.nii',names.directory_path,names.folder_id));
+%csf_mask = load_nii(sprintf('%s/c3rFLAIR_%s.nii',names.directory_path,names.folder_id));
 flair_ref = load_nii(sprintf('%s/mrFLAIR_%s.nii',names.directory_path,names.folder_id));
 sz = size(flair_ref.img); nii = flair_ref;
 %
@@ -121,10 +139,17 @@ wm_template = flair_ref.img .* wm_mask_new;
 %% generating partial volume estimates and ventricular maps
 fprintf('Constructing PV Estimates and Ventricle template \n');
 %
-pve_cut = zeros(sz); pve_cut(wm_mask.img==0) = 1;
-for d3 = 1:1:sz(3)
-    pve_slice = double(squeeze(pve_cut(:,:,d3)));
-    vent_cut(:,:,d3) = single(pve_slice - regiongrowing(pve_slice,1,1));
+pve_cut = zeros(sz);
+pve_cut(wm_mask.img==0) = 1;
+vent_cut = zeros(sz);
+conn = conndef(2, 'minimal');
+for d3 = 1:sz(3)
+    pve_slice = squeeze(pve_cut(:,:,d3));
+    %vent_cut(:,:,d3) = single(pve_slice - regiongrowing(pve_slice,1,1));
+    % A binary Image does not need regiongrowing
+    cc = bwconncomp(pve_slice, conn);
+    pve_slice(cc.PixelIdxList{1}) = 0;
+    vent_cut(:,:,d3) = pve_slice;
 end
 nii.img = vent_cut; save_nii(nii,sprintf('%s/vent_cut_%s.nii',names.directory_path,names.folder_id));
 [L_vent,num_vent] = bwlabeln(vent_cut); [hist_L_vent,xout] = hist(L_vent(:),unique(L_vent));

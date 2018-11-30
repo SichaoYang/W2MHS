@@ -23,7 +23,9 @@ out_unrectify = out .* ref_im; out_pos = zeros(sz);
 
 % cleaning up noisy detections
 for d3 = 1:sz(3)
-    temp = squeeze(gc(:,:,d3)); temp_bd = bwboundaries(1-temp); vert_bd = [];
+    temp = squeeze(gc(:,:,d3));
+    temp_bd = bwboundaries(1-temp);
+    vert_bd = [];
     for c = 1:length(temp_bd), vert_bd = [vert_bd;temp_bd{c,1}]; end
     if isempty(vert_bd), continue; end
     isl = squeeze(out_unrectify(:,:,d3));

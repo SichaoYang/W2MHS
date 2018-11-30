@@ -6,10 +6,10 @@ function chk = check_training(training_path)
        exist(fullfile(training_path, 'Training_model.meta'), 'file')  && ...
        exist(fullfile(training_path, 'Training_model.index'), 'file') && ...
        exist(fullfile(training_path, 'Training_model.data-00000-of-00001'), 'file')
-        disp("All training output present. Training is not required.");
+        disp('All training output present. Training is not required.');
         chk = true;
     else
-        disp("Some training outputs are missing. Training is required.");
+        disp('Some training outputs are missing. Training is required.');
         chk = false;
         if ~exist(fullfile(training_path, 'features_training.mat'), 'file') || ...
            ~exist(fullfile(training_path, 'labels_training.mat'), 'file')
@@ -17,5 +17,4 @@ function chk = check_training(training_path)
         end
         disp('Rewrite the user''s option of doing training to ''yes''.');
     end
-%     chk = py.check_training.main(training_path) > 0;
 end
