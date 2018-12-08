@@ -49,8 +49,6 @@ automatically assigned Subject IDs.
 
 3. (Optional) Use *Set Default* on the menu bar to set the default configuration of the GUI. You may
 want the GUI to store both the SPM12 and W2MHS toolbox paths. Setting a new default will overwrite
-the old configuration. Also, Use *Save* to save sessions to ’.mat’ files and *Load* them later.
+the old configuration. Also, Use * also save sessions to ’.mat’ files and restore them later.
 
-4. (Optional) Set the advanced options as explained in *param.m*.
-
-5. Click *Run* to start.
+4. (Optional) Set the advanced options as explained later.

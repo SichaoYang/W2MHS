@@ -31,13 +31,6 @@ function installW2MHS()
     if ~any(strcmp({v.Name}, 'Image Processing Toolbox'))
         error('Please install Image Processing Toolbox first.');
     end
-    
-    %% Creating a symbolic link to docker (Matlab cannot find docker on Mac)
-    if ~ispc
-        if system(sprintf('sudo chmod +x %s/docker_link.sh && sudo %s/docker_link.sh %s', w2mhstoolbox_path, w2mhstoolbox_path, training_path)) ~= 0
-            error('Cannot create a symbolic link for docker.')
-        end
-    end
 
     %% Pulling Dockerized Python Scripts    
     disp('Pulling dockerized python scripts...');
