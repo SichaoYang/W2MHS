@@ -128,7 +128,7 @@ fprintf('User chose to train the segmentation method: %s \n',do_train);
 if strcmpi(do_train,'yes') || ~check_training(training_path)
     fprintf('Training (Neural Network based classification) \n');
     % if performance_metrics i.e. ROC or confusion matrix needs to be printed, set False to True.
-    system(sprintf('docker run -ti --rm -v %s:/training sichao/w2mhs:v2018.3 python W2MHS_training.py False', training_path));
+    system(sprintf('docker run -ti --rm -v "%s":/training sichao/w2mhs:v2018.3 python W2MHS_training.py False', training_path));
     fprintf('Done training \n');
 end
 

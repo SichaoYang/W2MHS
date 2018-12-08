@@ -13,7 +13,7 @@ sub_image = padarray(input.img(K+1:end-K,K+1:end-K,K+1:end-K), [K K K]);
 sub_dim = size(sub_image);
 [ker, width_vec] = getKernels(width);
 
-system(sprintf('docker create -t -v %s:/training --name w2mhs sichao/w2mhs:v2018.3 python', training_path));
+system(sprintf('docker create -t -v "%s":/training --name w2mhs sichao/w2mhs:v2018.3 python', training_path));
 system('docker start w2mhs');
 %% segmenting new subject
 % initializing the segmentation process
