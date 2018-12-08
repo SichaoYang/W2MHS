@@ -10,8 +10,8 @@ if ~isdeployed
     spm('defaults','FMRI');
 end
 
-if ~exist(fullfile(names.w2mhstoolbox_path, 'TPM.nii'), 'file')
-    error('Could not find TPM.nii! \n\n Make sure the toolbox path is correct!');
+if ~exist(fullfile(spmtoolbox_path, 'tpm', 'TPM.nii'), 'file')
+    error(  'Could not find TPM.nii! \n\n Make sure the toolbox path is correct!');
 end
 
 %% generating batch file for coregistration

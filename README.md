@@ -14,24 +14,33 @@ linux: installer for Linux users.
 
 windows: installer for Windows users.
 
-macos: installer for MacOS users.
+mac: installer for Mac users.
 
 ## Installation
-1. Install [docker](https://docs.docker.com/install/)
+1. Install [Docker](https://docs.docker.com/install/)
 
 2. (Mac) Run ```sudo ln -s `which docker` /bin``` in the terminal.
 
-3. Download and unzip the W2MHS toolbox.
+3. Configure Docker.
+	- ([Windows](https://docs.docker.com/docker-for-windows/#docker-settings-dialog))
+	Right-click the Docker icon from the System tray.
+	click Settings - Advanced, and maximize the resources available to Docker.
+	- ([Mac](https://docs.docker.com/docker-for-mac/#preferences-menu))
+	Click the Docker icon from the menu bar,
+	click Preferences - Advanced, and maximize the resources available to Docker.
 
-4. Run Matlab with root/administrator permissions:
+4. Download and unzip the W2MHS toolbox.
+
+5. Run Matlab with root/administrator permissions:
     - (Windows) Right click Matlab and click "run as administrator".
-    - (Linux & MacOS) Run ```matlabroot``` in Matlab console and copy the returned path ```/.../MATLAB...```. Then run ```sudo /.../MATLAB.../bin/matlab``` in the terminal.
+    - (Linux & Mac) Run ```matlabroot``` in Matlab console and copy the returned path ```/.../MATLAB...```.
+    Then run ```sudo /.../MATLAB.../bin/matlab``` in the terminal.
 
-5. Navigate Matlab to the root directory of the toolbox.
+6. Navigate Matlab to the root directory of the toolbox.
 
-6. Run ```installW2MHS``` in Matlab console.
+7. Run ```installW2MHS``` in Matlab console.
 
-7. Run ```W2MHS``` in Matlab console.
+8. Run ```W2MHS``` in Matlab console.
 
 ## Usage
 1. Enter *W2MHS Toolbox Path*, *SPM Toolbox Path*, and *Output Path*, as well as *Output Name*

@@ -13,21 +13,22 @@ sub_image = padarray(input.img(K+1:end-K,K+1:end-K,K+1:end-K), [K K K]);
 sub_dim = size(sub_image);
 [ker, width_vec] = getKernels(width);
 
+system(sprintf('docker create -t -v %s:/training --name w2mhs sichao/w2mhs:v2018.3 python', training_path));
+system('docker start w2mhs');
 %% segmenting new subject
 % initializing the segmentation process
 fg_thresh = 0.6 * max(sub_image(:));
 fg = find(sub_image > fg_thresh); 
-N_tot = length(fg); lnloop = 500; folds = ceil(N_tot/lnloop);
+N_tot = length(fg); lnloop = 5000; folds = ceil(N_tot/lnloop);
 names.method = 'DNN Classification';
 print = struct('name', 'DNN Classification', 'short', 'DNN');
 fprintf('Segmenting subject: %s_%s using %s.\n',names.folder_name, names.folder_id, print.name);
-fprintf('Total folds in processing: %d \n',folds);
-disp('Applying kernels on the folds...');
+fprintf('Fold size: %d. Total folds in processing: %d \n', lnloop, folds);
 oo = zeros(N_tot,1); first = 1;
 feature_path = fullfile(training_path, 'feature_set.csv');
 label_path = fullfile(training_path, 'DNN_testing_file.csv');
-if exist(feature_path, 'file'), delete(feature_path); end
 % computing kernels for each fold followed by segmenting
+tic
 for j = 1:folds
     last = min(first + lnloop - 1, N_tot);
     sub_ind = first:last;
@@ -50,18 +51,19 @@ for j = 1:folds
     end
     D3 = [D,D2];
     % writes the features to the file for testing purposes
-    % csvwrite(fullfile(training_path, 'feature_set.csv'), D3);
-    dlmwrite(feature_path,D3,'delimiter',',','-append');
-     
+    csvwrite(fullfile(training_path, 'feature_set.csv'), D3);
+     % executes the testing script
+    system('docker exec -t w2mhs python W2MHS_testing.py');
+     % converts the binary label output from string to integer 
+    oo(sub_ind) = csvread(label_path);
+    
     first = last + 1;
-    if mod(j,5) == 0, fprintf('... %d done ... \n',j); end
+    if mod(j,5) == 0, fprintf('... %d done ... \n',j); toc
+    end
 end
 fprintf('... all folds done ... \n');
-
-disp('Classifying...');
-% executes the testing script
-docker_run('python W2MHS_testing.py', training_path);
-oo = csvread(label_path);
+system('docker stop w2mhs');
+system('docker rm w2mhs');
 delete(label_path);
 delete(feature_path);
 

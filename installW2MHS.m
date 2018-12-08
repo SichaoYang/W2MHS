@@ -34,8 +34,8 @@ function installW2MHS()
 
     %% Pulling Dockerized Python Scripts    
     disp('Pulling dockerized python scripts...');
-    if system('docker pull sichao/w2mhs:v2018.2') ~= 0
-        error('Docker cannot pull sichao/w2mhs:v2018.2.');
+    if system('docker pull sichao/w2mhs:v2018.3') ~= 0
+        error('Docker cannot pull sichao/w2mhs:v2018.3.');
     end
 
     %% Done
