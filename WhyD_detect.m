@@ -3,34 +3,35 @@
 
 function names = WhyD_detect(names, training_path)
 
-%% loading image data and options for training 
+%% loading image data and options for training
 input = load_nii(fullfile(names.directory_path, names.WM_mod));
-% input = load_nii(sprintf('%s/c2rFLAIR_%s.nii',names.directory_path,names.folder_id));
-% flair_ref = load_nii(sprintf('%s/mrFLAIR_%s.nii',names.directory_path,names.folder_id));
-% input.img = input.img .* flair_ref.img;
 load(fullfile(training_path, 'options_training.mat'), 'width', 'K');
 sub_image = padarray(input.img(K+1:end-K,K+1:end-K,K+1:end-K), [K K K]);
 sub_dim = size(sub_image);
 [ker, width_vec] = getKernels(width);
 
+[~,~]=system('docker stop w2mhs');
+[~,~]=system('docker rm w2mhs');
 system(sprintf('docker create -t -v "%s":/training --name w2mhs sichao/w2mhs:v2018.3 python', training_path));
 system('docker start w2mhs');
 %% segmenting new subject
 % initializing the segmentation process
+load(fullfile(names.w2mhstoolbox_path, 'Hyperparameters.mat'), 'fold_size');
 fg_thresh = 0.6 * max(sub_image(:));
 fg = find(sub_image > fg_thresh); 
-N_tot = length(fg); lnloop = 5000; folds = ceil(N_tot/lnloop);
+N_tot = length(fg); folds = ceil(N_tot/fold_size);
 names.method = 'DNN Classification';
 print = struct('name', 'DNN Classification', 'short', 'DNN');
-fprintf('Segmenting subject: %s_%s using %s.\n',names.folder_name, names.folder_id, print.name);
-fprintf('Fold size: %d. Total folds in processing: %d \n', lnloop, folds);
+fprintf('Segmenting subject: %s_%s using %s.\n', names.folder_name, names.folder_id, print.name);
+fprintf('Fold size: %d. Total folds in processing: %d \n', fold_size, folds);
 oo = zeros(N_tot,1); first = 1;
 feature_path = fullfile(training_path, 'feature_set.csv');
 label_path = fullfile(training_path, 'DNN_testing_file.csv');
+print_step = min(10, ceil(folds/5));
 % computing kernels for each fold followed by segmenting
 tic
 for j = 1:folds
-    last = min(first + lnloop - 1, N_tot);
+    last = min(first + fold_size - 1, N_tot);
     sub_ind = first:last;
     [Xr,Yr,Zr] = ind2sub(sub_dim, fg(sub_ind));
     D  = zeros(length(sub_ind), K^3);
@@ -52,13 +53,15 @@ for j = 1:folds
     D3 = [D,D2];
     % writes the features to the file for testing purposes
     csvwrite(fullfile(training_path, 'feature_set.csv'), D3);
-     % executes the testing script
+    % executes the testing script
     system('docker exec -t w2mhs python W2MHS_testing.py');
-     % converts the binary label output from string to integer 
+    % converts the binary label output from string to integer 
     oo(sub_ind) = csvread(label_path);
     
     first = last + 1;
-    if mod(j,5) == 0, fprintf('... %d done ... \n',j); toc
+    if mod(j, print_step) == 0
+        fprintf('... %d done ... \n',j);
+        toc
     end
 end
 fprintf('... all folds done ... \n');

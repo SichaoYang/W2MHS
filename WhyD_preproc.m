@@ -5,13 +5,17 @@
 function names = WhyD_preproc(names, spmtoolbox_path)
 
 fprintf('\nDoing preprocessing on subject : %s_%s \n',names.folder_name,names.folder_id);
-if ~isdeployed
+if isdeployed
+    if ismac, spm_path = fullfile(spmtoolbox_path, '/spm12.app/Contents/MacOS/spm12');
+    else, spm_path = fullfile(spmtoolbox_path, 'spm12');
+    end
+else
     addpath(spmtoolbox_path);
     spm('defaults','FMRI');
 end
 
 if ~exist(fullfile(spmtoolbox_path, 'tpm', 'TPM.nii'), 'file')
-    error(  'Could not find TPM.nii! \n\n Make sure the toolbox path is correct!');
+    error('Could not find TPM.nii! \n\n Make sure the toolbox path is correct!');
 end
 
 %% generating batch file for coregistration
@@ -34,15 +38,11 @@ fprintf('Coregistration of T2-FLAIR to T1\n');
 
 job = sprintf('%s/coreg%s_job.m',names.directory_path,names.folder_id);
 if isdeployed
-    if system(sprintf('%s batch %s', fullfile(spmtoolbox_path, 'spm12'), job)) ~= 0
+    if system(sprintf('"%s" batch "%s"', spm_path, job)) ~= 0
         error('Could not intialize SPM12 preprocessing! \n\n  Make sure the toolbox path is correct!');
     end
 else
-    try
-        spm_jobman('run', {job});
-    catch
-        error('Could not intialize SPM12 preprocessing! \n\n  Make sure you have SPM12 installed and the path is correct...');
-    end
+    spm_jobman('run', {job});
 end
 clear job;
 names.flair_coreg = sprintf('rFLAIR_%s.nii',names.folder_id);
@@ -94,7 +94,7 @@ fprintf('GM, WM, CSF Tissues extraction from T1\n');
 %
 job = sprintf('%s/tissues%s_job.m',names.directory_path,names.folder_id);
 if isdeployed
-    if system(sprintf('%s batch %s', fullfile(spmtoolbox_path, 'spm12'), job)) ~= 0
+    if system(sprintf('"%s" batch "%s"', spm_path, job)) ~= 0
         error('Could not intialize SPM12 preprocessing! \n\n  Make sure the toolbox path is correct!');
     end
 else

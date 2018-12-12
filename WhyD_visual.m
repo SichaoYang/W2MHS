@@ -1,15 +1,11 @@
 %% script for visualizing the pmap as a heatmap on the original co-registered image
 % this script is triggered if the argument do_visualize is 'yes'
 
-function names = WhyD_visual(names, colorbar, gauss)
+function names = WhyD_visual(names, colorbar)
     % loads the grayscale probability map
     pmap = load_nii(fullfile(names.directory_path, names.seg_pmap));
     % converts to an 8-bit integer array
-    if gauss > 0  % applies gaussian filter on the output image to blur it
-        pmap = uint8(rescale(imgaussfilt3(pmap.img, gauss), 0, 256));
-    else
-        pmap = uint8(rescale(pmap.img, 0, 256));
-    end
+    pmap = uint8(rescale(pmap.img, 0, 256));
     % a binary mask selecting out the voxels without nonzero wmh probability
     wmh = repmat(pmap > 0, [1 1 1 3]);
     % the colored pmap output without the original image

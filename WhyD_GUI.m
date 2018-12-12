@@ -2,11 +2,11 @@ function varargout = WhyD_GUI(varargin)
     %% W2MHS_GUI M-file for WhyD_GUI.fig
     %
     %   W2MHS_GUI, is the GUI for the White Matter Hyperintensity
-    %   Segmentation and Quantification application created by Vamsi Ithapu.
+    %   Segmentation and Quantification application by Vamsi Ithapu.
     %
-    %   Author: Chris Lindner.
+    %   Created by Chris Lindner.
     %
-    % Last Modified by Sichao Yang 25-Nov-2018
+    %   Last Modified by Sichao Yang 12/12/2018.
 
     % Begin initialization code
     gui_Singleton = 1;
@@ -31,12 +31,13 @@ function varargout = WhyD_GUI(varargin)
 function WhyD_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
     % Choose default command line output for W2MHS
     handles.output = hObject;
-
+    handles.w2mhs_toolpath = varargin{1}{1};
+    
     % Update handles structure
     guidata(hObject, handles);
 
     clc
-    fprintf('______________________________________________________________________\n');
+    disp('______________________________________________________________________');
     disp('   White Matter Hyperintensity Segmentation and Quantification');
     disp('University of Wisconsin - Wisconsin Alzheimers Disease Research Center');
     disp('Initializing W2MHS........');
@@ -56,7 +57,6 @@ function varargout = WhyD_GUI_OutputFcn(~, ~, handles)
 
 % --- Executes on button press in output_path_button.
 function output_path_button_Callback(hObject, ~, handles)
-    %file_path = uigetdir(getappdata(hObject, 'path'));
     file_path = uigetdir_workaround(getappdata(hObject, 'path'));
     if ~isequal(file_path, 0)
         set(handles.output_path, 'string', file_path);
@@ -130,7 +130,6 @@ function add_button_Callback(hObject, eventdata, handles)
             end
         end
     elseif(strcmp(choice, 'Directory'))
-        %path = uigetdir(getappdata(hObject, 'def_path'),'Select Batch Directory');
         path = uigetdir_workaround(getappdata(hObject, 'def_path'),'Select Batch Directory');
         if ~isequal(path, 0)
             WhyD_batch(hObject, eventdata, handles, path);
@@ -211,7 +210,7 @@ function run_button_Callback(~, ~, handles)
     output_path = {get(handles.output_path, 'String')};
     input_images = getappdata(handles.image_list, 'image_matrix') ; 
     output_ids = getappdata(handles.image_list, 'id_matrix');
-    w2mhstoolbox_path = get(handles.w2mhs_toolpath, 'String');
+    w2mhstoolbox_path = handles.w2mhs_toolpath;
     spm_tool_path = get(handles.spm_tool_path, 'String');
     
     tmp = get(handles.do_training, 'String');
@@ -223,27 +222,20 @@ function run_button_Callback(~, ~, handles)
     tmp = get(handles.do_visualization, 'String');
     do_visualize = tmp{get(handles.do_visualization, 'value')};
     
-    pmap_cut = str2double(get(handles.edit6, 'String'));
-    clean_th = str2double(get(handles.edit7, 'String'));
-    tmp = get(handles.popupmenu5, 'String');
-    delete_preproc = tmp{get(handles.popupmenu5, 'value')};
+    fold_size = str2double(get(handles.fold_size, 'String'));
+    pmap_cut = str2double(get(handles.pmap_cut, 'String'));
+    clean_th = str2double(get(handles.clean_th, 'String'));
+    tmp = get(handles.delete_preproc, 'String');
+    delete_preproc = tmp{get(handles.delete_preproc, 'value')};
     
-    param(w2mhstoolbox_path, clean_th, pmap_cut, delete_preproc);
+    param(w2mhstoolbox_path, fold_size, pmap_cut, clean_th, delete_preproc);
 
     %% Run WhyD
     WhyD_setup(output_name, output_path, input_images, output_ids, ...
         w2mhstoolbox_path, spm_tool_path, do_train, do_preproc, do_quantify, do_visualize, 2);
 
-% --- Executes on button press in w2mhs_tool.
-function w2mhs_tool_Callback(hObject, ~, handles)
-    file_path = uigetdir_workaround(getappdata(hObject, 'path'));
-    if ~isequal(file_path, 0)
-        set(handles.w2mhs_toolpath,'string', file_path);
-        setappdata(hObject, 'path', file_path);
-    end
-
 % --- Executes on button press in spm_tool.
-function spm_tool_Callback(hObject, eventdata, handles)
+function spm_tool_Callback(hObject, ~, handles)
     file_path = uigetdir_workaround(getappdata(hObject, 'path'));
     if ~isequal(file_path, 0)
         set(handles.spm_tool_path,'String', file_path);
@@ -254,10 +246,8 @@ function load_state(handles, file)
     load(file, 'state');
     
     set(handles.output_name, 'String', state.output_name);
+    if ~isdeployed, set(handles.spm_tool_path, 'String', state.spm_tool_path); end
     set(handles.output_path, 'String', state.output_path);
-    set(handles.w2mhs_toolpath, 'String', state.w2mhs_toolpath);
-    if isempty(state.w2mhs_toolpath), set(handles.w2mhs_toolpath, 'String', path); end
-    set(handles.spm_tool_path, 'String', state.spm_tool_path);
     set(handles.do_training, 'value', state.do_training);
     set(handles.do_preproc, 'value', state.do_preproc);
     set(handles.do_quantify, 'value', state.do_quantify);
@@ -266,31 +256,22 @@ function load_state(handles, file)
     setappdata(handles.image_list, 'image_matrix', state.image_matrix);
     setappdata(handles.add_button, 'def_path', state.def_path)
     setappdata(handles.image_list, 'id_matrix', state.id_matrix);
-
-function path = def_path()
-    if isdeployed
-        [~, path] = system('echo $W2MHS_HOME');
-        path = path(1:end-1);
-        if isempty(path), path = pwd; end
-    else
-        path = fileparts(mfilename('fullpath'));
-    end
     
 function new_Callback(~, ~, handles)
-    path = def_path();
-    file = fullfile(path, 'default.mat');
+    w2mhstoolbox_path = handles.w2mhs_toolpath;
+    file = fullfile(w2mhstoolbox_path, 'default.mat');
     if exist(file, 'file')
-        try
-            load_state(handles, file);
-        catch e
-            disp(e)
-            errordlg('Issue loading default configuration', 'Error');
-        end
+        load_state(handles, file);
     else
         set(handles.output_name, 'String', '');
         set(handles.output_path, 'String', '');
-        set(handles.w2mhs_toolpath, 'String', path);
-        set(handles.spm_tool_path, 'String', '');
+        if isdeployed
+            set(handles.spm_tool,      'Enable', 'off');
+            set(handles.spm_tool_path, 'Enable', 'off');
+            set(handles.spm_tool_path, 'String', fullfile(w2mhstoolbox_path, 'spm'));
+        else
+            set(handles.spm_tool_path, 'String', '');
+        end
         set(handles.do_training, 'value', 1);
         set(handles.do_preproc, 'value', 1);
         set(handles.do_quantify, 'value', 1);
@@ -298,7 +279,7 @@ function new_Callback(~, ~, handles)
         set(handles.image_list, 'String', cell(0,1));
         setappdata(handles.image_list, 'image_matrix', cell(0,2));
         setappdata(handles.image_list, 'id_matrix', cell(0,2));
-        setappdata(handles.add_button, 'def_path', path);
+        setappdata(handles.add_button, 'def_path', w2mhstoolbox_path);
     end
 
 function open_Callback(~, ~, handles)
@@ -311,7 +292,6 @@ function open_Callback(~, ~, handles)
 function save_state(handles, file)
     state.output_name = get(handles.output_name, 'String');
     state.output_path =  get(handles.output_path, 'String');
-    state.w2mhs_toolpath = get(handles.w2mhs_toolpath, 'String');
     state.spm_tool_path = get(handles.spm_tool_path, 'String');
     state.do_preproc = get(handles.do_preproc, 'value');
     state.do_training = get(handles.do_training, 'value');
@@ -325,15 +305,14 @@ function save_state(handles, file)
     save(file, 'state');
     
 function save_Callback(~, ~, handles)
-
     [FileName,PathName] = uiputfile('W2MHS_save.mat','Save as...');
     if ~isequal(FileName, 0) && ~isequal(PathName, 0)
         save_state(handles, strcat(PathName, FileName));
     end
     
 function def_Callback(~, ~, handles)
-    path = fileparts(mfilename('fullpath'));
-    file = fullfile(path, 'default.mat');
+    w2mhstoolbox_path = handles.w2mhs_toolpath;
+    file = fullfile(w2mhstoolbox_path, 'default.mat');
     save_state(handles, file);
 
 function close_Callback(~, ~, handles)
@@ -356,7 +335,3 @@ function createFcn(hObject, ~, ~)
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
         set(hObject,'BackgroundColor','white');
     end
-    
-function w2mhs_toolpath_CreateFcn(hObject, eventdata, handles)
-    createFcn(hObject, eventdata, handles);
-    set(hObject,'string', def_path());

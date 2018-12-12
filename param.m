@@ -1,10 +1,18 @@
-function param(w2mhstoolbox_path, p, c, d)
+function param(w2mhstoolbox_path, f, p, c, d)
 
 %%      Hyperparameter Default Setup Script         %%
 % The parameters in this script are additional options
 % that affect various parts of the segmentation and
-% quantification modules as well as some memory
-% management.
+% quantification modules as well as some memory management.
+
+%% Fold Size
+% This is the number of voxels detected together.
+% A larger fold size accelerates the detetion 
+% at the expense of a higher memory consumption.
+%
+% Suggested default is 5000
+
+fold_size = 5000;
 
 %% Probability Map Cut
 % This is the cutoff for deciding which voxels to include
@@ -35,13 +43,12 @@ clean_th = 2.5;
 
 delete_preproc = 'No';
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% %%
-%                  DO NOT MODIFY BELOW THIS POINT                      %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if nargin > 1 && ~isnan(c), clean_th = c; end
-if nargin > 2 && ~isnan(p), pmap_cut = p; end
-if nargin > 3, delete_preproc = d; end
+if nargin > 1 && ~isnan(f), fold_size = f; end
+if nargin > 2 && ~isnan(c), clean_th = c; end
+if nargin > 3 && ~isnan(p), pmap_cut = p; end
+if nargin > 4, delete_preproc = d; end
     
+fold_size = max(fold_size, 1);
 clean_th = max(clean_th, 0);
 pmap_cut = max(min(pmap_cut, 1), 0);
 if strcmpi(delete_preproc,'yes')
@@ -49,4 +56,4 @@ if strcmpi(delete_preproc,'yes')
 else
     delete_preproc = 'No';
 end
-save(fullfile(w2mhstoolbox_path, 'Hyperparameters.mat'), 'clean_th', 'pmap_cut', 'delete_preproc');
+save(fullfile(w2mhstoolbox_path, 'Hyperparameters.mat'), 'fold_size', 'clean_th', 'pmap_cut', 'delete_preproc');

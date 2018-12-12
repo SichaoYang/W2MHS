@@ -44,7 +44,6 @@
 %%
 function WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path, do_train, do_preproc, do_quantify, do_visualize, GUI)
 training_path = fullfile(w2mhstoolbox_path, 'training');
-disp(GUI);
 %% checking for correct number of inputs
 if nargin < 6
     error('Input error: Not enough input agruments for WhyD_setup! \n');
@@ -152,16 +151,15 @@ end
 
 %% visualizing the output
 fprintf('User chose to visualize the hyperintensity: %s \n',do_visualize);
-if strcmpi(do_visualize, 'yes')
-    colorbar = jet(256);
-    fprintf('Creating heatmaps \n');
-    for n = 1:num
-        names = WhyD_visual(names_stack{n,1}, colorbar, 0);
-        view_nii(load_nii(fullfile(names.directory_path, names.heatmap)));
-        names_stack{n,1} = names;
-    end
-    fprintf('Done visualization \n');
+
+colorbar = jet(256);
+fprintf('Creating heatmaps \n');
+for n = 1:num
+    names = WhyD_visual(names_stack{n,1}, colorbar);
+    if strcmpi(do_visualize, 'yes'), view_nii(load_nii(fullfile(names.directory_path, names.heatmap))); end
+    names_stack{n,1} = names;
 end
+fprintf('Done visualization \n');
 
 %% done will all experiments
 fprintf('DONE \n');
