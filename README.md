@@ -4,46 +4,27 @@
 #### 2018
 
 ## About
-This document only contains installation and using instructions for GUI users.
-Please refer to [W2MHS](https://github.com/SichaoYang/W2MHS) for more details about the project, source code and commandline interface.
+This document only contains installation and using instructions for GUI users.  
+Please refer to [W2MHS](https://github.com/SichaoYang/W2MHS) for more details about the project, source code, and commandline interface.
 
 ## Branches
-source: Matlab source code for users with Matlab installed.
-
-linux: installer for Linux users.
-
-windows: installer for Windows users.
-
-mac: installer for Mac users.
+source: Matlab source code for Matlab users.  
+[linux](https://github.com/SichaoYang/W2MHS-release/tree/linux): standalone installation guide for Linux users.  
+[windows](https://github.com/SichaoYang/W2MHS-release/tree/windows): standalone installation guide for Windows users.  
+[macos](https://github.com/SichaoYang/W2MHS-release/tree/macos): standalone installation guide for MacOS users.  
 
 ## Installation
-1. Install [Docker](https://docs.docker.com/install/)
-
-2. (Mac) Run ```sudo ln -s `which docker` /bin``` in the terminal.
-
-3. Configure Docker.
-	- ([Windows](https://docs.docker.com/docker-for-windows/#docker-settings-dialog))
-	Right-click the Docker icon from the System tray.
-	click Settings - Advanced, and maximize the resources available to Docker.
-	- ([Mac](https://docs.docker.com/docker-for-mac/#preferences-menu))
-	Click the Docker icon from the menu bar,
-	click Preferences - Advanced, and maximize the resources available to Docker.
-
-4. Download and unzip the W2MHS toolbox.
-
-5. Run Matlab with root/administrator permissions:
-    - (Windows) Right click Matlab and click "run as administrator".
-    - (Linux & Mac) Run ```matlabroot``` in Matlab console and copy the returned path ```/.../MATLAB...```.
-    Then run ```sudo /.../MATLAB.../bin/matlab``` in the terminal.
-
-6. Navigate Matlab to the root directory of the toolbox.
-
-7. Run ```installW2MHS``` in Matlab console.
-
-8. Run ```W2MHS``` in Matlab console.
+You can install and run the toolbox as:
+1. MATLAB standalone application + dockerized Python scripts: runnable without MATLAB. Check the corresponding branch for W2MHS standalone and Docker installation instructions.
+2. MATLAB source code + dockerized Python scripts: for MATLAB users. Check the corresponding branch for Docker installation instructions.
+3. MATLAB source code + Python source code: runnable without Docker but require Python and dependent packages. Please refer to [W2MHS](https://github.com/SichaoYang/W2MHS).
+4. All-in-one docker container: only for Linux users. [Install Docker](https://docs.docker.com/install/) and run  
+```
+sudo docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix -v <path/to/images>:/media sichao/w2mhs:v2018.1
+```
 
 ## Usage
-1. Enter *W2MHS Toolbox Path*, *SPM Toolbox Path*, and *Output Path*, as well as *Output Name*
+1. Enter *SPM Toolbox Path*, and *Output Path*, as well as *Output Name*
 as the shared prefix of the output folders of all subjects.
 
 2. Add subjects using the "Add T1 and T2 Volumes" button. Remove a subject from the batch by selecting
