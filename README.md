@@ -41,10 +41,10 @@ We currently provide four options for installing and running the W2MHS toolbox.
     - Cons: 
         - Requires MATLAB.
     - Download, Install and Run:
-        1. Install and configure Docker according to instructions for  
-            - [64-bit Linux](https://github.com/SichaoYang/W2MHS-release/tree/linux)  
-            - [64-bit Windows](https://github.com/SichaoYang/W2MHS-release/tree/windows)  
-            - [64-bit MacOS](https://github.com/SichaoYang/W2MHS-release/tree/macos)  
+        1. Install and configure Docker according to instructions (Only the *Install Docker* and *Configure Docker* sections) for  
+            - [Linux](https://github.com/SichaoYang/W2MHS-release/tree/linux)  
+            - [Windows](https://github.com/SichaoYang/W2MHS-release/tree/windows)  
+            - [MacOS](https://github.com/SichaoYang/W2MHS-release/tree/macos)  
         2. Download and extract this toolbox and [SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/).
         3. Open MATLAB **as Administrator/root**, navigate to the toolbox repository and run ```installW2MHS``` in MATLAB prompt.
         4. To run the toolbox, open MATLAB **as Administrator/root** and run ```W2MHS``` in MATLAB prompt.
