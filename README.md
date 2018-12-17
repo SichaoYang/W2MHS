@@ -101,7 +101,7 @@ We currently provide four options for installing and running the W2MHS toolbox.
     - **Output Path** -- The path to contain the output folders.
     - **Add T1 and T2 Volumes**
         - **Single Subject** -- Add the T1 and T2 image of a subject and give the subject a unique ID.
-        - ** Directory** -- Add all pairs of T1 and T2 images under a directory following the naming conventions (not case sensitive):  
+        - **Directory** -- Add all pairs of T1 and T2 images under a directory following the naming conventions (not case sensitive):  
         ```
         <batch name><unique id><bravo|flair>.nii
         <batch name>_<unique id>_<bravo|flair>.nii
@@ -111,7 +111,7 @@ We currently provide four options for installing and running the W2MHS toolbox.
     - **Move Up/Move Down** -- Change the order of the subjects.
     - **SPM Toolbox Path** -- The root directory of SPM12. This field is automatically filled in for standalone users.
 - **Panel -- Options**
-    - **Do Training** -- Choose 'Yes' to retrain the model. To train a new model, put *features_training.mat* and *labels_training.mat* in the *training* folder under the toolbox directory.
+    - **Do Training** -- Choose 'Yes' to retrain the model. To train a new model on your data, refer to the original paper and contact the authors for help on creating your *features_training.mat* and *labels_training.mat*. Put them in the *training* folder under the toolbox directory.
     - **Do Preprocessing** -- Choose 'No' to skip preprocessing of the subjects that are preprocessed earlier and have all the preprocessing outputs in the same output folder.
     - **Do Quantification** -- Choose 'Yes' to calculate and save accumulation measures of subject *<id>* to *Quant_<id>.mat* in the output folder.
     - **Do Visualization** -- Choose 'Yes' to display the heatmap. If 'No' is chosen, the user can still view the heatmap of subject *<id>* later by running ```view_nii(load_nii('DNN_heatmap_<id>.nii'))``` or by superimposing *DNN_pmap_<id>.nii* on any source image in the output using thrid party software, such as afni.
