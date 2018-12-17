@@ -106,7 +106,13 @@ We currently provide four options for installing and running the W2MHS toolbox.
         <batch name><unique id><bravo|flair>.nii
         <batch name>_<unique id>_<bravo|flair>.nii
         ```  
-        where *<batch name>* is supposed to be the same for all subjects in the folder, *<unique id>* must be unique for each subject and must begin with an integer, and the string 'bravo' or 'flair' must present after *<unique id>*. 
+        where *<batch name>* is supposed to be the same for all subjects in the folder, *<unique id>* must be unique for each subject and must begin with an integer, and the string 'bravo' or 'flair' must present after *<unique id>*. Some examples:  
+        ```
+        "mrt87flair.nii"             "mrt87bravo.nii"
+        "mrt 87 FLAIR.nii"           "mrt 87 BrAvO.nii"
+        "mrt_87_v2_Flair_ver1.nii"   "mrt_87_v2_Bravo_ver1.nii"
+        "mrt87_v2_ver1_FLAIR.nii"    "mrt87_v2_ver1_BRAVO.nii"
+        ```
     - **Remove Selected** -- Remove the selected the subject.
     - **Move Up/Move Down** -- Change the order of the subjects.
     - **SPM Toolbox Path** -- The root directory of SPM12. This field is automatically filled in for standalone users.
