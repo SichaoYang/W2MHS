@@ -11,7 +11,7 @@ input = load_nii(fullfile(names.directory_path, names.seg_out));
 out = double(input.img);
 sz = size(out);
 ref_input = load_nii(fullfile(names.directory_path, names.WM_mod));
-ref_im = rescale(double(ref_input.img));
+ref_im = double(ref_input.img); ref_im = ref_im / max(ref_im(:));
 gc_input = load_nii(fullfile(names.directory_path, names.GMCSF));
 gc = double(gc_input.img);
 

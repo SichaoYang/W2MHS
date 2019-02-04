@@ -5,7 +5,7 @@ function names = WhyD_visual(names, colorbar)
     % loads the grayscale probability map
     pmap = load_nii(fullfile(names.directory_path, names.seg_pmap));
     % converts to an 8-bit integer array
-    pmap = uint8(rescale(pmap.img, 0, 256));
+    pmap = uint8(pmap.img * 256);
     % a binary mask selecting out the voxels without nonzero wmh probability
     wmh = repmat(pmap > 0, [1 1 1 3]);
     % the colored pmap output without the original image
@@ -14,8 +14,9 @@ function names = WhyD_visual(names, colorbar)
     output(wmh) = colorbar(pmap(pmap > 0),:);
     % loads the original neuroimage
     source = load_nii(fullfile(names.directory_path, names.flair_coreg));
+    source = single(source.img); source = source / max(source(:));
     % the colored pmap output combined with the original image
-    output_merged = repmat(rescale(source.img), [1 1 1 3]);  
+    output_merged = repmat(source, [1 1 1 3]);  
     % adds the pmap onto the original neuroimage
     output_merged(wmh) = output(wmh);
     % 511 - RGB96 is a storage data type for the generated nii heatmaps
