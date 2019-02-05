@@ -10,9 +10,9 @@ function param(w2mhstoolbox_path, f, p, c, d)
 % A larger fold size accelerates the detetion 
 % at the expense of a higher memory consumption.
 %
-% Suggested default is 5000
+% Suggested default is 2000 * available memory
 
-fold_size = 5000;
+fold_size = 4000;
 
 %% Probability Map Cut
 % This is the cutoff for deciding which voxels to include
