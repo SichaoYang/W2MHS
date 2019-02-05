@@ -104,7 +104,7 @@ Syntax of the W2MHS main script for command line usage:
 of subjects)
 4. output_ids : IDs for the subjects (number of fields is the same as the number of subjects)
 5. w2mhstoolbox_path : Path of W2MHS
-6. spmtoolbox_path : Path of SPM12b
+6. spmtoolbox_path : Path of SPM12
 7. do_train : Optional argument for training (default : no)
 8. do_preproc : Optional argument for preprocessing (default : yes)
 9. do_quantify : Optional argument for quantification (default : yes)
@@ -127,7 +127,7 @@ input_images = {’T1ofsubject1’,’T2ofsubject1’ ; ’T1ofsubject2’,’T2
 ’T1ofsubject3’,‘T2ofsubject3’};
 input_meth = {’rf_regress’};
 w2mhstoolbox_path = ’/home/.../W2MHS’;
-spmtoolbox_path = ’/home/.../spm12b’;
+spmtoolbox_path = ’/home/.../spm12’;
 do_train = ’no’; do_preproc = ’no’; do_quantify = ’yes’; do_visualize = 'yes';
 param(.6,2.5,’yes’);
 WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path,...
