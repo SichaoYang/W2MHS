@@ -65,77 +65,12 @@ function output_path_button_Callback(hObject, ~, handles)
     
 % --- Executes on button press in add_button.
 function add_button_Callback(hObject, eventdata, handles)
-    choice = questdlg('What would you like to add?', 'Add images...', ...
-        'Single Subject', 'Directory', 'Single Subject');
+    batch = uipickfiles('f', getappdata(hObject, 'def_path'), ...
+                        'type', {'*.nii', 'NIFTI files'}, ...
+                        'prompt', 'Add NIFTI files or folders', ...
+                        'out', 'struct');
+    WhyD_batch(hObject, eventdata, handles, batch);
 
-    if(strcmp(choice, 'Single Subject'))
-        [input_image_t1,path1] = uigetfile({'*.nii'},'Select T1 Image...',getappdata(hObject, 'def_path'));
-        if ~isequal(path1, 0)
-            file1 = strcat(path1,input_image_t1);
-            setappdata(hObject, 'def_path', path1);
-            setappdata(hObject, 'path1', path1);
-            [input_image_t2,path2] = uigetfile({'*.nii'},'Select T2 Image...',getappdata(hObject, 'def_path'));
-            if ~isequal(path2, 0)
-                setappdata(hObject, 'path2', path2);
-                file2 = strcat(path2, input_image_t2);
-            
-                fNam = lower(input_image_t1);
-                ind = regexp(fNam, '[0-9].*');
-
-                defID = {''};
-                if ind
-                    defID{1} = strrep(strrep(strrep(strrep(strrep(fNam(ind:end),...
-                        'bravo',''),'flair',''),'__','_'),'.nii',''),' ','');
-                end
-
-                id = inputdlg('Enter a subject ID:','Specify Identifier...',[1 25],defID);
-
-                if numel(id) == 1
-                    tmp = get(handles.image_list, 'String');
-                    [row, ~] = size(tmp);
-
-                    spaces = ',';
-                    if numel(id{1}) < 15
-                        for i = 1 : 15 - numel(id{1})
-                            spaces = cat(2,spaces, ' ');
-                        end
-                    end
-
-                    string(1:79) = 'ID:                    T1:                         T2:                         ';
-                    endInd = min(4+numel(id{1})-1, 22);
-                    string(4:endInd) = id{1}(1:endInd-3);
-
-                    endInd = min(27+numel(input_image_t1)-1, 50);
-                    string(27:endInd) = input_image_t1(1:endInd-26);
-
-                    endInd = min(56+numel(input_image_t2)-1, 79);
-                    string(56:endInd) = input_image_t2(1:endInd-55);
-
-
-                    tmp{row+1} = string;
-                    set(handles.image_list, 'String', tmp);
-
-                    image_matrix = getappdata(handles.image_list, 'image_matrix');
-                    id_matrix = getappdata(handles.image_list, 'id_matrix');
-
-                    [row, ~] = size(image_matrix);
-                    image_matrix{row+1,1} = file1;
-                    image_matrix{row+1,2} = file2;
-                    id_matrix{row+1,1} = id{1};
-
-                    setappdata(handles.image_list, 'image_matrix', image_matrix);
-                    setappdata(handles.image_list, 'id_matrix', id_matrix);
-                    set(handles.image_list, 'Value', row+1);
-                end
-            end
-        end
-    elseif(strcmp(choice, 'Directory'))
-        path = uigetdir_workaround(getappdata(hObject, 'def_path'),'Select Batch Directory');
-        if ~isequal(path, 0)
-            WhyD_batch(hObject, eventdata, handles, path);
-        end
-
-    end
 % --- Executes on button press in add_button. a single one of those
 function remove_Callback(~, ~, handles)
     index = get(handles.image_list, 'Value');
@@ -218,7 +153,7 @@ function run_button_Callback(~, ~, handles)
     tmp = get(handles.do_preproc,'String');
     do_preproc = tmp{get(handles.do_preproc, 'value')};
     tmp = get(handles.do_quantify, 'String');
-    do_quantify = tmp{get(handles.do_quantify, 'value')};
+    do_quantify = tmp{get(handles.do_quantifyT1, 'value')};
     tmp = get(handles.do_visualization, 'String');
     do_visualize = tmp{get(handles.do_visualization, 'value')};
     
