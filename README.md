@@ -3,8 +3,8 @@
 #### 2018
 
 ## About
-This wiki provides installation and configuration instructions for end users of the toolbox.  
-Please refer to [W2MHS](https://github.com/SichaoYang/W2MHS) for more details about the project, source code, and command line interface.  
+This wiki provides installation and configuration instructions for GUI users of the toolbox.
+If you want to know more details about the project, source code, and Matlab command line interface, or contribute to the development of the toolbox, please refer to [W2MHS](https://github.com/SichaoYang/W2MHS).
 
 ## Installation and Execution
 [Install and execute the toolbox](https://github.com/SichaoYang/W2MHS-release/wiki/Installation-and-Execution).
