@@ -11,4 +11,5 @@ This wiki provides installation and configuration instructions for GUI users of 
 [Install and execute the toolbox](https://github.com/SichaoYang/W2MHS-release/wiki/Installation-and-Execution).
 
 ## GUI Explanation
+Users input paths, select images, and control hyperparameters with the GUI, and then hit "RUN" to run the toolbox.
 [Learn about GUI operations and hyperparameters](https://github.com/SichaoYang/W2MHS-release/wiki/GUI-Explanation).
