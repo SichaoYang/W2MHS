@@ -153,7 +153,7 @@ function run_button_Callback(~, ~, handles)
     tmp = get(handles.do_preproc,'String');
     do_preproc = tmp{get(handles.do_preproc, 'value')};
     tmp = get(handles.do_quantify, 'String');
-    do_quantify = tmp{get(handles.do_quantifyT1, 'value')};
+    do_quantify = tmp{get(handles.do_quantify, 'value')};
     tmp = get(handles.do_visualization, 'String');
     do_visualize = tmp{get(handles.do_visualization, 'value')};
     
