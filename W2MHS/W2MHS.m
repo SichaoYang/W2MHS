@@ -745,8 +745,8 @@ classdef W2MHS < matlab.apps.AppBase
             app.BrainImage.YTick = [];
             app.BrainImage.BackgroundColor = [0 0 0];
             app.BrainImage.Position = [-5 400 110 110];
-%             app.BrainImage.Toolbar.Visible = 'off';
-            imshow('brain.jpg', 'Parent', app.BrainImage, 'XData', [0 app.BrainImage.Position(3)], 'YData', [0 app.BrainImage.Position(4)]);
+            if isprop(app.BrainImage, 'Toolbar'), app.BrainImage.Toolbar.Visible = 'off'; end
+            imshow('img/brain.jpg', 'Parent', app.BrainImage, 'XData', [0 app.BrainImage.Position(3)], 'YData', [0 app.BrainImage.Position(4)]);
 
             % Create WiscImage
             app.WiscImage = uiaxes(app.UIFigure);
@@ -757,8 +757,8 @@ classdef W2MHS < matlab.apps.AppBase
             app.WiscImage.YTick = [];
             app.WiscImage.BackgroundColor = [0 0 0];
             app.WiscImage.Position = [500 395 100 110];
-%             app.WiscImage.Toolbar.Visible = 'off';
-            imshow('uw.png', 'Parent', app.WiscImage, 'XData', [0 app.WiscImage.Position(3)], 'YData', [0 app.WiscImage.Position(4)]);
+            if isprop(app.WiscImage, 'Toolbar'), app.WiscImage.Toolbar.Visible = 'off'; end
+            imshow('img/uw.png', 'Parent', app.WiscImage, 'XData', [0 app.WiscImage.Position(3)], 'YData', [0 app.WiscImage.Position(4)]);
 
             % Create ShadowLabel
             app.ShadowLabel = uilabel(app.UIFigure);
