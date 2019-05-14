@@ -18,7 +18,7 @@ function obj = postproc(obj)
     for i = 1:numel(cc.PixelIdxList)
         l = cc.PixelIdxList{i};
         vol = sum(pmap_mask(l)); vol_periGM = sum(periGM(l));  % find the proportion of WMH in the peri-GM region
-        if vol < 64 && vol_periGM / vol > 0.5, pmap(l) = 0; end  % clear the WMH component with more than half voxels in the peri-GM region
+        if vol == 1 || (vol < 64 && vol_periGM / vol > 0.5), pmap(l) = 0; end  % clear the WMH component with more than half voxels in the peri-GM region
     end
 
     if obj.keeps.pmap, nii.img = pmap; save_nii(nii, obj.ff(obj.names.pmap)); end

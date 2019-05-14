@@ -1,10 +1,13 @@
 classdef Subject
     properties
-        id, t1_path, t2_path, names, keeps
+        id
+        t1_path
+        t2_path
+        names
+        keeps
     end
     
     methods (Static)
-%         function vget = w2mhs_path(vset), persistent v; if nargin, v = vset; end; vget = v; end
         function vget = spm_path(vset), persistent v; if nargin, v = vset; end; vget = v; end
         function vget = output_path(vset), persistent v; if nargin, v = vset; end; vget = v; end
         function vget = do_preproc(vset), persistent v; if nargin, v = strcmpi(vset, 'yes'); end; vget = v; end
@@ -37,7 +40,7 @@ classdef Subject
             obj.detect;
             obj.postproc;
             if obj.keeps.names, obj.savenames; end
-            if obj.do_visual, Visual.init(obj.ff(obj.names.pmap), obj.ff(obj.names.bias_corr)); end
+            if obj.do_visual, Visual.init(obj.ff(obj.names.bias_corr), obj.ff(obj.names.pmap), false); end
         end
         
         function abs_path = ff(obj, rel_path)

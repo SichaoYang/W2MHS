@@ -4,8 +4,6 @@
 function obj = detect(obj)
 
 %% loading image data and options for training
-if exist(obj.ff(obj.names.class), 'file'), return; end
-
 roi = load_nii(obj.ff(obj.names.roi));
 K = 5; width = [3, 5]; batch_size = obj.batch_size;
 sub_image = padarray(roi.img(K+1:end-K,K+1:end-K,K+1:end-K), [K K K]);
