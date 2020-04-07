@@ -180,7 +180,8 @@ end
 if isempty(prop.append)
 	file_picks = {};
 	full_file_picks = {};
-	dir_picks = dir(' ');  % Create empty directory structure.
+	dir_picks = repmat(dir(char(127)),0,1);  % Create empty directory structure.
+    % https://www.mathworks.com/matlabcentral/answers/347235-uipickfiles-error-with-r2015b
 elseif iscellstr(prop.append) && isvector(prop.append)
 	num_items = length(prop.append);
 	file_picks = cell(1,num_items);
@@ -620,7 +621,7 @@ setpref('uipickfiles','figure_position',fig_pos)
 			dir_pick = fdir(values(i));
 			pick = dir_pick.name;
 			pick_full = fullfile(current_dir,pick);
-			dir_pick.name = pick_full;
+			% dir_pick.name = pick_full;
 			if ~nodupes || ~any(strcmp(full_file_picks,pick_full))
 				file_picks{end + 1} = pick; %#ok<AGROW>
 				full_file_picks{end + 1} = pick_full; %#ok<AGROW>

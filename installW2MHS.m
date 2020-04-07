@@ -35,6 +35,6 @@ function installW2MHS()
     
     %% Done
     fprintf('\n\n                     INSTALLATION COMPLETE\n');
-    fprintf('        To begin a GUI session, enter the command "W2MHS"\n');
+    fprintf('        To begin a GUI session, enter the command "w2mhs"\n');
     fprintf('______________________________________________________________________\n');
 end

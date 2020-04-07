@@ -18,7 +18,7 @@ function obj = postproc(obj)
     for i = 1:numel(cc.PixelIdxList)
         l = cc.PixelIdxList{i};
         vol = sum(pmap_mask(l)); vol_periGM = sum(periGM(l));  % find the proportion of WMH in the peri-GM region
-        if vol == 1 || (vol < 64 && vol_periGM / vol > 0.5), pmap(l) = 0; end  % clear the WMH component with more than half voxels in the peri-GM region
+        if vol < 64 && vol_periGM / vol > 0.5, pmap(l) = 0; end  % clear the WMH component with more than half voxels in the peri-GM region
     end
 
     if obj.keeps.pmap, nii.img = pmap; save_nii(nii, obj.ff(obj.names.pmap)); end
@@ -41,7 +41,8 @@ function obj = postproc(obj)
 
 %% quantification
     k = 1;  % Ithapu et al., 2014, p. 4226
-    ref = load_nii(obj.ff(obj.names.bias_corr)); ICV = sum(ref.img, 'all');  % periventricular region
+    ref = load_nii(obj.ff(obj.names.bias_corr)); 
+    ICV = sum(ref.img, 'all');
     EV = sum((roi_norm * pmap) .^ k, 'all') / ICV;
     dEV_cut = sum((roi_norm * pmap_d_cut) .^ k, 'all') / ICV;
     pEV_cut = sum((roi_norm * pmap_p_cut) .^ k, 'all') / ICV;
@@ -49,11 +50,11 @@ function obj = postproc(obj)
     pEV_conn = sum((roi_norm * pmap_p_conn) .^ k, 'all') / ICV;
     
     if obj.keeps.quant_mat, save(obj.ff(obj.names.quant_mat), 'EV', 'dEV_cut', 'pEV_cut', 'dEV_conn', 'pEV_conn'); end
-    summary = sprintf(['Subject: %s\nEV: %.9f\n', ...
-        'dEV (outside periventricular region): %.9f\n', ...
-        'pEV (inside periventricular region): %.9f\n', ...
-        'dEV (isolated from periventricular region): %.9f\n', ...
-        'pEV (connected to periventricular region): %.9f\n'], ...
+    summary = sprintf(['Subject: %s\nEV: %g\n', ...
+        'dEV (outside periventricular region): %g\n', ...
+        'pEV (inside periventricular region): %g\n', ...
+        'dEV (isolated from periventricular region): %g\n', ...
+        'pEV (connected to periventricular region): %g\n'], ...
         obj.id, EV, dEV_cut, pEV_cut, dEV_conn, pEV_conn);
     fprintf(summary);
     if obj.keeps.quant_txt
@@ -62,6 +63,6 @@ function obj = postproc(obj)
         fclose(fid);
     end
     
-%% clean unneeded nifti files
+%% clean unneeded NIfTI images
     obj.del('bias_corr'); obj.del('roi'); obj.del('vent_dil'); obj.del('class');
 end

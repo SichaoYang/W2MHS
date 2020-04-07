@@ -4,6 +4,8 @@
 function obj = detect(obj)
 
 %% loading image data and options for training
+if exist(obj.ff(obj.names.class), 'file'), return; end
+
 roi = load_nii(obj.ff(obj.names.roi));
 K = 5; width = [3, 5]; batch_size = obj.batch_size;
 sub_image = padarray(roi.img(K+1:end-K,K+1:end-K,K+1:end-K), [K K K]);
@@ -24,7 +26,7 @@ set_size = length(fg); batches = ceil(set_size / batch_size);
 disp(['Segmenting subject ', obj.id])
 fprintf('Batch size: %d  Total folds: %d\n', batch_size, batches)
 oo = zeros(set_size,1); first = 1;
-% computing kernels for each fold followed by segmenting
+% computes kernels and classifies WMH
 tic
 for batch = 1:batches
     last = min(first + batch_size - 1, set_size);
