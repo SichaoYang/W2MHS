@@ -1,260 +1,70 @@
-
 # W2MHS - Wisconsin White Matter Hyperintensities Segmentation Toolbox
-#### Wisconsin Alzheimer’s Disease Research Center, UW Madison
-#### 2018
+#### Wisconsin Alzheimer’s Disease Research Center, UW-Madison
 
 ## About
-W2MHS is an open source toolbox designed for detecting and quantifying White Matter Hyperintensities
-(WMH) in Alzheimer’s and aging related neurological disorders. WMHs arise as bright regions on T2-
-weighted FLAIR images. They reflect comorbid neural injury or cerebral vascular disease burden. Their
-precise detection is of interest in Alzheimer’s disease (AD) with regard to its prognosis. Our toolbox provides
-self-sufficient set of tools for segmenting these WMHs reliably and further quantifying their burden for 
-down-processing studies. This documentation provides the background on the algorithm and parameters that
-comprise W2MHS along with the syntax.
-
-## Package Details
-W2MHS is implemented in MATLAB and Python.
-
-The MATLAB scripts use
-[Image Processing Toolbox](https://www.mathworks.com/products/image.html), 
-[Tools for NIfTI and ANALYZE image](https://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image), and
-[SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/).
-Please go to [MathWorks](http://www.mathworks.com/index.html)
-for details about the MATLAB software (installation, support, and licensing). 
-
-The Python scripts rely on
-[Matplotlib](https://matplotlib.org/),
-[NumPy](http://www.numpy.org/),
-[SciPy](https://www.scipy.org/),
-[scikit-learn](http://scikit-learn.org/stable/), and
-[TensorFlow](https://www.tensorflow.org/).
-See the next section for installation instructions.
-
-The inputs to the toolbox include a T1 weighted MRI image and a T2 FLAIR image.
-Hence W2MHS uses multichannel images to segment WMHs. The several modules of **W2MHS** include:
-- *Pre-processing Module*: Pre-processing involves constructing the White Matter (WM) region of inter-
-est and partial volume estimates of the tissues (White Matter, Gray Matter, Cerebro Spinal Fluid)
-among other things (bias correction, registration etc.). W2MHS uses a popular neuroimaging toolkit
-[SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/) for this pre-processing.
-- *Segmentation Module*: Segmentation module is the heart of W2MHS.
-A Deep Neural Network implemented in [TensorFlow](https://www.tensorflow.org/)
-is used to detect the WMHs.
-- *Quantification Module*: The purpose of this module is to summarize the WMH segmentations. This is
-especially important in down-stream analysis.
-- *Visualization Module*: The purpose of this module is to visualize the hyperintense regions. Probability maps are 
-converted into a heatmap.
-
-We first walk you through installation of the toolbox, followed by the several ways to interface with it.
-Finally there are details on some more advanced features and parameters of W2MHS.
+W2MHS is an open source toolbox designed for detecting and quantifying White Matter Hyperintensities (WMH) in Alzheimer’s and aging-related neurological disorders. WMHs arise as bright regions on T2- weighted FLAIR images. They reflect comorbid neural injury or cerebral vascular disease burden. Their precise detection is of interest in Alzheimer’s disease (AD) with regard to its prognosis. Our toolbox provides a self-sufficient set of tools for segmenting these WMHs reliably and further quantifying their burden for down-processing studies. This documentation provides the background on the algorithm and parameters that comprise W2MHS along with the syntax.
 
 ## Installation
-1. Install [Matlab](https://www.mathworks.com/products/matlab.html),
-[Image Processing Toolbox](https://www.mathworks.com/products/image.html), and
-[SPM12](https://www.fil.ion.ucl.ac.uk/spm/software/spm12/).
-2. Download and unzip [W2MHS](https://github.com/SichaoYang/W2MHS).
-3. (Optional) Download [W2MHS_Source_Code_and_Training_Data.zip](https://www.nitrc.org/frs/download.php/5548/W2MHS_Source_Code_and_Training_Data.zip)
-and extract *training/features_training.mat* and *training/labels_training.mat* to *W2MHS/training/*.
-4. Install a version of [Python](https://www.python.org/) that
-[supports TensorFlow](https://www.tensorflow.org/install/pip)i.e. 
-Python 2.7, 3.4, 3.5, 3.6 for Linux/macOS and Python 3.5, 3.6 (64-bit) for Windows to date.
-Check if ```python``` and ```pip``` are in the system path by
-running ```python -V``` and ```pip -V``` in the command prompt.
-These commands should output the version of ```python``` and ```pip``` installed.
-5. (Optional) Modify *requirements.txt* if you prefer using alternative versions of the packages.
-Modify the import statements in *W2MHS_training.py*, and *W2MHS_testing.py* to match the  version of
-your [TensorFlow](https://www.tensorflow.org/).
-If you want to install the packages in a virtual environment, create and activate it before the next step.
-6. Open Matlab **as administrator/root**, navigate into the *M2MHS* directory, and run ```installW2MHS```.
+- Upgrade MATLAB to R2019a or later.
+- Install [Image Processing Toolbox](https://www.mathworks.com/products/image.html).
+- Download [SPM12](https://www.fil.ion.ucl.ac.uk/SPM/software/SPM12/).
+- (Optional) Download [W2MHS_Sample_Images](https://www.nitrc.org/frs/download.php/6325/W2MHS_Sample_Images.tar.gz).
+- Open the W2MHS folder in MATLAB and run ```w2mhs``` (Alternatively, ```w2mhs.mlapp``` can be executed directly without opening the main program of MATLAB, but without a command window to display messages either).
 
-## Usage
-### Graphical Interface
+## Execution
+Procedures:  
+1. Configure execution options on the ```Options``` tab.  
+2. Configure output options on the ```Outputs``` tab.  
+3. Add images and run the analysis on the ```Main``` tab.  
+4. (Optional) Use tools on the ```Visuals``` tab to visualize output images.  
+5. (Optional) Save current settings to a file and load it back later.
 
-1. Run ```W2MHS``` in MATLAB to open up a GUI window.
+### Options
+Once you modify an option, its helper will be displayed on the bottom right of the ```Options``` tab.
+- **Input Image Type Identifiers**  
+	Each subject needs a pair of T1 and T2 images, whose filenames differ only by the image type identifier:  
+		T1: ```<pre>brav<suf>.nii```  
+		T2: ```<pre>flair<suf>.nii```  
+	```<pre><suf>``` is used as a unique, case-insensitive subject id to match the two images. Different subjects should have different ids. Leading, trailing, and duplicate underlines are removed.
+- **Preprocessing switch**
+	- **Yes**: Every subject will be preprocessed.
+	- **No**: Previous preprocessing output will be used if spotted in the output folder.
+- **Visualization switch**
+	- **Yes**: Once a subject finishes, two NIfTI image visualizers will pop up: one with an overlaying WMH (both deep and periventricular) heatmap and the other without, sharing their crosshair control. Not recommended when running a batch of jobs.
+	- **No**: Visualization can be conducted later using the visualization tools in the visuals tab.
+- **Hyperparameters**:
+	- **Classification Batch Size**: The number of voxels classified together in one iteration. A larger batch size enhances performance at the cost of higher memory consumption. Recommended value: 2048 * available memory in GB (e.g. 4096 if 2GB memory is available).
+	- **Probability Map Cutoff**: The denoising threshold voxels classified as WMH with confidence below which will be excluded.
+	- **Gray Matter Cleaning Distance**: The distance voxels classified as WMH within which from the gray matter surface will be excluded.
+	- **Periventricular Region Width**: The number of voxels the ventricular template is dilated by.
+	
+### Outputs
+See the ```Ouptuts``` tab or ```names.xls``` for the description of all output files. ```Filename``` can be customized. Uncheck the ```Keep``` checkbox of unneeded outputs to save disk space.
 
-2. Enter *W2MHS Toolbox Path*, *SPM Toolbox Path*, and *Output Path*, as well as *Output Name*
-as the shared prefix of the output folders of all subjects.
+### Main
+- **SPM12 Path**: Path to the root folder of SPM. If empty by default, the toolbox will search MATLAB search path for the first path ending with ```SPM12```.
+- **Output Path**: Path to all output files. The output files of each subject will be under a subfolder named after its id.
+- **Add Images**: Add input images through [uipickfiles](https://www.mathworks.com/matlabcentral/fileexchange/10867-uipickfiles-uigetfile-on-steroids). Navigate to destination directories, select images or directories on the left panel, click ```Add→``` to add them to the right panel, add files in other directories in the same way, and click ```Done```. If a directory is added, all NIfTI images under it and its subfolders will be added recursively. Added images will be listed in the list box below.
+- **Remove**: Remove the image selected in the list box below.
+- **Clear**: Remove all added images.
+- **Move Up/Down**: Switch the selected image with the image above/below it.
+- **Run**: The subject will be processed in sequence. Each subject undergoes four modules: preprocessing, segmentation, quantification, and visualization.
 
-3. Add subjects using the "Add T1 and T2 Volumes" button. Remove a subject from the batch by selecting
-it and pressing the ”Remove Selected” button.
-    
-    The add subjects button will allow you to add one subject at a time or select a directory that contains
-a batch of T1 and T2 image pairs. To use the directory batch function, the images must follow the naming
-convention described in the *BatchSetup.m* script. Each subject must have a unique name or identifier
-which is the Subject ID. If you enter one subject at a time make sure to enter this field and make sure
-they are all unique. When using the directory batch function make sure that the subjects it imports are
-automatically assigned Subject IDs.
+### Modules
+- **Preprocessing**: SPM coregisters the T2 image to the T1 image and segments WM, GM, and CSF PVEs. Then a ventricular template is created using geometrical methods and dilated by ```Periventricular Region Width```.
+- **Classification**: Voxels are grouped into batches of ```Classification Batch Size``` and convolved with 16 kernels. A neural network pre-trained on human-labeled data predicts WMH probability of each voxel from the convolutions. *TODO: discard the kernels and train a 3D MASK RCNN directly from the labeled images.*
+- **Quantification**: The estimated volume of WM (EV), deep WM (dEV), and periventricular WM (pEV) are calculated based on the predicted probability map and the total intracranial volume (ICV) of the subject. The predictions within ```Gray Matter Cleaning Distance``` and below ```Probability Map Cutoff``` are excluded. There are two ways of categorizing dEV and pEV:
+	- The hard way (cut): all WMH voxels within the dilated ventricular template is considered periventricular.
+	- The soft way (conn): all WMH areas connected to the dilated ventricular template is considered periventricular.
+	
+### Visualization
+The NIfTI images saved by [Tools for NIfTI and ANALYZE image](https://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image) can have an offset when visualized in other software (e.g. AFNI). Therefore, a visualization module is embedded in W2MHS.
+- **Quick NIfTI Image Viewer & Path Generator**: Input a subject id and select the name of an image that is checked to be kept. Click ```Gen & Copy``` to generate the full path of the corresponding image file, which is automatically copied to the clipboard. Click ```View``` to view the image.
+- **Advanced NIfTI Image Viewer**: Select ```Underlay``` and ```Overlay``` images and click ```View```. A human-readable visualization of the classification result superimposing the overlay (e.g. the probability map, ```pmap```) over the underlay (e.g. the coregistered, bias-corrected input image, ```bias_corr```) will pop up. When ```Show Underlay in A Separate Window``` is checked, another window visualizing only underlay will pop up for reference. Crosshair coordinates are shared across the two windows.
 
-4. (Optional) Use *Set Default* on the menu bar to set the default configuration of the GUI. You may
-want the GUI to store both the SPM12 and W2MHS toolbox paths. Setting a new default will overwrite
-the old configuration. Note that you can also save sessions to ’.mat’ files and restore them later.
-
-5. (Optional) Set the advanced options as explained later.
-
-6. Press *Run* on the top right corner to start.
-
-
-
-### Main Script Parameters
-Syntax of the W2MHS main script for command line usage:
-
-```WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path, spmtoolbox_path, do_train, do_preproc, do_quantify, do_visualize)```
-1. output_name : Name for the experiment (takes in only one field)
-2. output_path : Path of the directory where the outputs are to be stored (takes in only one field)
-3. input_images : Path of the T1 and T2 FLAIR images (.nii files) (number of fields is 2 times the number
-of subjects)
-4. output_ids : IDs for the subjects (number of fields is the same as the number of subjects)
-5. w2mhstoolbox_path : Path of W2MHS
-6. spmtoolbox_path : Path of SPM12
-7. do_train : Optional argument for training (default : no)
-8. do_preproc : Optional argument for preprocessing (default : yes)
-9. do_quantify : Optional argument for quantification (default : yes)
-10. do_visualize : Optional argument for visualizing (default : yes)
-
-### Command Line Example
-To better understand the syntax and usage of WhyD setup.m, here is an example run. Given he and
-T2-FLAIR images from 3 subjects and we want detect and quantify the WMH volume in each. The name
-for these experiments is “mystudy”. We want to store all the outputs in “/home/myname/myoutputs”.
-We denote the “1”, “2” and “3”. And their T1 and T2-FLAIR .nii image files are at “T1ofsubject1”,
-“T2ofsubject1”, “T1ofsubject2”, “T2ofsubject2”, “T1ofsubject3”, “T2ofsubject3” respectively. With this
-setup, we then generate a example.m file as follows, and run it:
-```
-%% function example
-clear all; clc; close all;
-output_path = {’/home/myname/myoutputs’};
-output_name = {’mystudy’};
-output_ids = {’1’; ’2’, ’3’};
-input_images = {’T1ofsubject1’,’T2ofsubject1’ ; ’T1ofsubject2’,’T2ofsubject2’ ;...
-’T1ofsubject3’,‘T2ofsubject3’};
-input_meth = {’rf_regress’};
-w2mhstoolbox_path = ’/home/.../W2MHS’;
-spmtoolbox_path = ’/home/.../spm12’;
-do_train = ’no’; do_preproc = ’no’; do_quantify = ’yes’; do_visualize = 'yes';
-param(.6,2.5,’yes’);
-WhyD_setup(output_name, output_path, input_images, output_ids, w2mhstoolbox_path,...
-spmtoolbox_path, do_train, do_preproc, do_quantify, do_visualize);
-```
-
-The outputs of these experiments are stored in three directories for each of the three subjects with
-names “mystudy 1”, “mystudy 2” and “mystudy 3”. Their paths are “/home/myname/myoutputs/mystudy
-1”, “/home/myname/myoutputs/mystudy 2” and “/home/myname/myoutputs/mystudy 3” respectively. In
-each of these directories the outputs include
-final WMH probability maps of WMH detections,
-heatmap visualizations,
-WMH quantification measures,
-preprocessing files like GM, WM and CSF, ventricular maps etc.
-Each folder contains a “names_id.mat” file (where “id” is the subject id).
-It lists the contents of all the output files.
-For example, this mat file for our subject “1” looks something like:
-```
-       directory_path: '/home/myname/myoutputs/mystudy_1'
-          folder_name: 'mystudy'
-            folder_id: '1'
-         source_bravo: 'BRAVO_1.nii'
-         source_flair: 'FLAIR_1.nii'
-         pve_flair_c1: 'c1rFLAIR_1.nii'
-         pve_flair_c2: 'c2rFLAIR_1.nii'
-         pve_flair_c3: 'c3rFLAIR_1.nii'
-          flair_coreg: 'rFLAIR_1.nii'
-       flair_biascorr: 'mrFLAIR_1.nii'
-                 Vent: 'Vent_strip_1.nii'
-                GMCSF: 'GMCSF_strip_1.nii'
-               WM_mod: 'WM_modstrip_1.nii'
-               method: 'DNN Classification'
-              seg_out: 'DNN_out_1.nii'
-        seg_unrectify: 'DNN_unrectify_1.nii'
-             seg_pmap: 'DNN_pmap_1.nii'
-         accumulation: 'Quant_1.mat'
-              heatmap: 'DNN_heatmap_1.nii'
-```
-Of particular importance there are the fields *seg_pmap*, *heatmap* and "accumulation" which represent
-the final WMH image (probability map), the heatmap visualization, and the WMH quantification measures.
-
-To view an output image, run ```view_nii(load_nii('path/to/image.nii'))``` in MATLAB command prompt.
-
-### Batch Script
-W2MHS also comes with a batch script for processing a lot of subjects. The GUI has a similar batch
-feature but this batch script only requires a directory and it will figure out the rest. There is a particular 
-file setup and naming convention that must be followed for any of the W2MHS batch scripts to read
-in your inputs. To learn more about the usage of this script read the comments in the *BatchSetup.m* script.
-
-### Advanced Options
-**Training** We have provided features as well as a learned DNN model with the W2MHS toolbox
-but you may use your own features as well. The raw features are not included in the source code download
-but may be downloaded separately. They are approximately 1GB. See the examples, ’features training.mat’
-paired with ’labels training.mat’ in ’W2MHS/training’ to get a feel for the format of the features we use. Our
-current model uses 119,284 feature vectors, half of which are extracted from voxel patches identified as white
-matter hyperintensities and half from voxel patches that are not hyperintense. We are currently working on
-providing code that will assist our users in creating their own features to train a more individualized DNN model.
-
-**Hyperparameters** Most of the parameters for the detection and preprocessing are set to reasonable values.
-Three parameters of importance are “clean_th” (a cleaning threshold parameter) and “pmap_cut” (a
-probability map cut value that is used for hyperintensity accumulation) and a “Yes” / “No” option to conserve disk space
-(W2MHS will delete extraneous intermittent files throughout processing). Note that this
-option will use approximately one fifth of the disk space as the traditional output. To edit the default settings
-simply open the *param.m* script in the W2MHS source folder and modify the parameters. More details on
-what these parameters do are included in the *param.m* script.
-
-It is also easy to modify these hyperparameters for individual runs. If you are using the GUI, you will
-see the three options at the bottom. Simply modify them to meet your needs. If you are running W2MHS
-via the command line, before ```WhyD_setup``` is called you must call ```param```. Specify
-the three hyperparameters in the arguments of this function call.
-Example: param( 0.6, 2.5 ,'yes');
-The first is the "pmap_cut", second is "clean_th", and last is "Conserve Disk Space."
-If you do not call this script, the default parameters will be used.
-
-##  Contents
-### Scripts
-- **WhyD_setup.m** : This is the main setup script. It creates the necessary directories and calls other
-internal scripts.
-- **WhyD_batch.m** : An internal batch script. Use BatchSetup.m if you want to do a command line
-batch automatically.
-- **WhyD_preproc.m** : Internal preprocessing script that generates a SPM12 batch processing to coreg-
-ister and segment WM, GM and CSF tissues. It also constructs ventricle maps and PV estimates.
-- **WhyD_detect.m** : Internal segmentation script that performs the hyperintensity segmentation using the DNN.
-- **WhyD_postproc.m** : Internal postprocessing script that cleans up the segmented outputs.
-- **WhyD_quant.m** : Internal quantification script that calculates the hyperintensity accumulation (deep,
-periventricular, and total).
-- **WhyD_visual**: Internal visualization script that converts the p-map output from *WhyD_postproc.m* into a heatmap,
-which is then superimposed on the original co-registered image (or another image you choose, specified by variable ```source```),
-visualizing the probability of hyperintense regions with the color gradient specified by argument ```colorbar```.
-If there is only one subject, the heatmap will be displayed right after generation. 
-- **W2MHS_training.py** : Internal Python+TensorFlow training script. This is an optional script that generates a learned DNN model
-using a given set of features and labels. In the default setting this script is not used
-(a pre-generated model is included in the toolbox). In order to visualize the model performance set
-```system(sprintf('python %s/W2MHS_training.py False', w2mhstoolbox_path));``` to
-```system(sprintf('python %s/W2MHS_training.py True', w2mhstoolbox_path));``` in *WhyD_setup.m*.
-- **W2MHS_testing.py** : Internal Python+TensorFlow testing script called from *Whyd_detect.m*.
-It loads the hyperparameters of DNN model saved by *W2MHS_training.py* and
-classifies each new instance of the testing set into hyperintense or non-hyperintense voxels.
-- **performance_metrics.py**: Optional script used to test the validity of the learned model.
-The script can be used to check the performance of the model on new features set.
-See the code for usage and *W2MHS_training.py* for an example.
-- **getKernels.m, getCenter.m, get_gauss_conv.m** : Internal scripts called by *WhyD detect.m*.
-See the paper for details.
-- **check_preproc.m**: Internal script called by *WhyD_setup.m* to see if a subject needs preprocessing 
-when the user choose not to preprocess the subject.
-- **check_training.m** : Internal scripts called by *WhyD_setup.m* to check whether necessary training outputs are
-present in order to decide  if the model needs to be trained when the user chooses not to train the model.
-- **BatchSetup.m** : Easy way to run a batch. Open this script and edit the parameters inside.
-- **W2MHS.m**, **WhyD_GUI.m**: Opens the GUI interface.
-- **installW2MHS.m** : Add the toolbox to the MATLAB path,
-check the presence of the dependent files, and handle the Python dependencies listed in
-*requirements.txt* with [pip](https://pypi.org/project/pip/).
-- **params.m** : Contains hyperparameters which may be modified and saved in the W2MHS directory.
-### Subdirectories
-- **NIFTI_codes** : Folder containing scripts from [Tools for NIfTI and ANALYZE image](https://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image).
-- **training** : Folder containing training data and the extracted model (TensorFlow checkpoint).
-### Files under training directory: training/*
-- **options_training.mat**: Internal mat file providing parameters for *WhyD_detect*.
-- **checkpoint**, **Training_model.index**, **Training_model.meta**,
-**Training_model.data-00000-of-00001**: Optional TensorFlow files storing a DNN trained by *W2MHS_training.py*.
-- **features_training.mat**, **labels_training.mat**: Optional mat files containing the training data
-needed by *W2MHS_training.py*. Can be downloaded from [NITRC](https://www.nitrc.org/frs/download.php/5548/W2MHS_Source_Code_and_Training_Data.zip).
-
-## Notes
-This toolbox was developed on Windows and Linux operating systems, and should work on both.
-If you have trouble running W2MHS or if you have other bug reports or feature requests,
-post in the help forums on
-[NITRC](https://www.nitrc.org/forum/forum.php?forum_id=3854) or 
-[SourceForge](https://sourceforge.net/p/w2mhs/discussion/general/)
-for further assistance.
+### Settings File
+- **Save Settings**: Save current settings on the ```Main```, ```Options```, and ```Outputs``` tabs to an external ```.mat``` file.
+- **Open Settings**: Load settings from an external ```.mat``` file.
+- **Set as Default**: Save current settings on the ```Main```, ```Options```, and ```Outputs``` to be the default settings when W2MHS reopens. Default settings are saved to ```default.mat``` under the W2MHS directory.
+- **Reset to Default**: Load default settings.
+- **Save Before Exit**: Click to check or uncheck. If checked, the settings right before W2MHS closes will be set as the default settings and thus be recoverable.  

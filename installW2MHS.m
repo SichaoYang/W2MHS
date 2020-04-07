@@ -1,43 +1,40 @@
 %%  INSTALLATION SCRIPT
 function installW2MHS()
     clc
-    fprintf('______________________________________________________________________\n');
-    fprintf('Wisconsin White Matter Hyperintensity Segmentation and Quantification:\n');
+    disp('______________________________________________________________________');
+    disp('Wisconsin White Matter Hyperintensity Segmentation and Quantification');
     
-    %% Add W2MHS to FilePath
-    w2mhstoolbox_path = fileparts(mfilename('fullpath'));
-    addpath(genpath(w2mhstoolbox_path));
-    fprintf('"%s" and its subdirectories successfully added to MATLAB path.\n' , w2mhstoolbox_path);
-
-    %% Check Training Path
-    v=ver;
-    if ~exist('training', 'dir')
-        error('The training folder is missing. Please download it from NITRC or SourceForge.');
-    end
+     %% Add W2MHS to FilePath
+    addpath(genpath(pwd));
+    savepath()
+    fprintf('\n"%s" and its \n subdirectories successfully added to MATLAB path.\n', pwd);
+     
+    fprintf('\nChecking prerequisites:\n');
     
     %% Check Image Processing Toolbox
     v=ver;
-    if ~any(strcmp({v.Name}, 'Image Processing Toolbox'))
-        error('Please install Image Processing Toolbox first.');
+    if any(strcmp({v.Name}, 'Image Processing Toolbox'))
+        disp('    Image Processing Toolbox presents.')
+    else
+        error('    Please install Image Processing Toolbox.');
     end
-
+    
     %% Check Tools for NIfTI and ANALYZE image
-    if ~exist('make_nii', 'file') || ...
-       ~exist('save_nii', 'file') || ...
-       ~exist('load_nii', 'file') || ...
-       ~exist('view_nii', 'file')        
-        error('Please download Tools for NIfTI and ANALYZE image and place it under the W2MHS toolbox folder.\n');
+    if exist('NIFTI_codes', 'dir')
+        disp('    Tools for NIfTI and ANALYZE image presents.')
+    else
+        error('    Please download Tools for NIfTI and ANALYZE image and unzip it under the toolbox folder.\n');
     end
-
-    %% Install Python Dependencies
-    fprintf('Check and install required Python packages with pip...\n');
-    if system('python -m pip install --upgrade pip') ~= 0 || ...
-       system(sprintf('python -m pip install -r %s/requirements.txt', w2mhstoolbox_path)) ~= 0
-        error('Pip installation failed.');
+    
+    %% Check Training
+    if exist(fullfile(pwd, 'training', 'model.mat'), 'file')
+        disp('    Pre-trained model presents.')
+    else
+        error('    Pre-trained model not found. Please redownload model.mat or train your own model.');
     end
-
+    
     %% Done
-    fprintf('\n                     INSTALLATION COMPLETE \n');
-    fprintf('To begin a GUI session, enter the command "W2MHS"\n');
+    fprintf('\n\n                     INSTALLATION COMPLETE\n');
+    fprintf('        To begin a GUI session, enter the command "w2mhs"\n');
     fprintf('______________________________________________________________________\n');
 end
